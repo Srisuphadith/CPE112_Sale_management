@@ -1,7 +1,7 @@
 #include<stdio.h>
 
-typedef struct Binary_Search_Tree{
+typedef struct AVL_Tree{
     char ID[6]/*ไอดีสินค้า*/ , stockID[6]/*ไอ่ดีสต็อค*/ , imports[7]/*วันสินค้าเข้า[รูปแบบวันที่ DDMMYY]*/ , exports[7]/*วันสินค้าออก[รูปแบบวันที่ DDMMYY]*/;
     int stock/*ของคงคลัง*/ , access/*จำนวนการกดดูสินค้านั้นๆ*/ , addToCart/*จำนวนการเพิ่มสินค้านั้นๆลงตระกร้า*/ , buy/*จำนวนการซื้อ(ครั้ง)*/ , heightOfTree/*สำหรับหมุนต้นไม้*/;
     struct Binary_Search_Tree* left , * right;
-}BS_Tree;
+}AVL_Tree;
