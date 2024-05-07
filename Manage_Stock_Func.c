@@ -3,17 +3,18 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct AVL_Tree*createnode(char ID[6]/*ไอดีสินค้า*/, char stockID[6]/*ไอ่ดีสต็อค*/, char imports[7]/*วันสินค้าเข้า[รูปแบบวันที่ DDMMYY]*/, char exports[7]/*วันสินค้าออก[รูปแบบวันที่ DDMMYY]*/, int stock, int access/*จำนวนการกดดูสินค้านั้นๆ*/ ,int addToCart/*จำนวนการเพิ่มสินค้านั้นๆลงตระกร้า*/ ,int buy/*จำนวนการซื้อ(ครั้ง)*/ ,int heightOfTree/*สำหรับหมุนต้นไม้*/){
+struct AVL_Tree*createnode(char ID[6]/*ไอดีสินค้า*/, char stockID[6]/*ไอ่ดีสต็อค*/, char imports[7]/*วันสินค้าเข้า[รูปแบบวันที่ DDMMYY]*/, char exports[7]/*วันสินค้าออก[รูปแบบวันที่ DDMMYY]*/, int stock, int access/*จำนวนการกดดูสินค้านั้นๆ*/ ,int addToCart/*จำนวนการเพิ่มสินค้านั้นๆลงตระกร้า*/ ,int buy/*จำนวนการซื้อ(ครั้ง)*/ ){
     struct AVL_Tree* newnode = (struct AVL_Tree*)malloc(sizeof(struct AVL_Tree));
-    strcmp(newnode->ID,ID);
-    strcmp(newnode->stockID,stockID);
-    strcmp(newnode->imports,imports);
-    strcmp(newnode->exports,exports);
+    strcpy(newnode->ID,ID);
+    strcpy(newnode->stockID,stockID);
+    strcpy(newnode->imports,imports);
+    strcpy(newnode->exports,exports);
     newnode->stock=stock;
     newnode->access=access;
     newnode->addToCart=addToCart;
     newnode->buy=buy;
     newnode->heightOfTree=1;
+    newnode->key = access+addToCart+buy;
 
     newnode->left=NULL;
     newnode->right=NULL;
@@ -31,16 +32,83 @@ int maxof(int a, int b){
     return (a>b) ? a:b;
 }
 
+int getBalance(struct AVL_Tree *node){
+    if(node==NULL)
+        return 0;
+    return height(node->left)-height(node->right);
+}
+
+struct AVL_Tree *rightRotate(struct AVL_Tree *y){
+    struct AVL_Tree *x = y->left;
+    struct AVL_Tree *temp = x->left;
+
+    //perform rotation
+    x->right = y;
+    y->left = temp;
+
+    //updateheight
+    y->heightOfTree = maxof(height(y->left),height(y->right))+1;
+    x->heightOfTree = maxof(height(x->left),height(x->right))+1;
+
+    return x;
+}
+
+struct AVL_Tree *leftRotate(struct AVL_Tree *x){
+    struct AVL_Tree *y = x->right;
+    struct AVL_Tree *temp = y->left;
+
+    //perform rotation
+    y->left = x;
+    x->right = temp;
+
+    //updateheight
+    x->heightOfTree = maxof(height(x->left),height(x->right))+1;
+    y->heightOfTree = maxof(height(y->left),height(y->right))+1;
+
+    return y;
+}
+
 //เพิ่มสินค้าใน AVL Tree
 // เพิ่ม
 // กรอกข้อมูลสินค้า เช่น ชื่อ รหัส
 // ุจำนวนสินค้าคงคลัง
 
-struct AVL_Tree *add_AVL(struct AVL_Tree*node, char ID[6]/*ไอดีสินค้า*/, char stockID[6]/*ไอ่ดีสต็อค*/, char imports[7]/*วันสินค้าเข้า[รูปแบบวันที่ DDMMYY]*/, char exports[7]/*วันสินค้าออก[รูปแบบวันที่ DDMMYY]*/, int stock, int access/*จำนวนการกดดูสินค้านั้นๆ*/ ,int addToCart/*จำนวนการเพิ่มสินค้านั้นๆลงตระกร้า*/ ,int buy/*จำนวนการซื้อ(ครั้ง)*/ ,int heightOfTree/*สำหรับหมุนต้นไม้*/){
+struct AVL_Tree *insert_AVL(struct AVL_Tree*node, char ID[6]/*ไอดีสินค้า*/, char stockID[6]/*ไอ่ดีสต็อค*/, char imports[7]/*วันสินค้าเข้า[รูปแบบวันที่ DDMMYY]*/, char exports[7]/*วันสินค้าออก[รูปแบบวันที่ DDMMYY]*/, int stock, int access/*จำนวนการกดดูสินค้านั้นๆ*/ ,int addToCart/*จำนวนการเพิ่มสินค้านั้นๆลงตระกร้า*/ ,int buy/*จำนวนการซื้อ(ครั้ง)*/){
     if(node == NULL)
-        return createnode(ID[6]/*ไอดีสินค้า*/, stockID[6]/*ไอ่ดีสต็อค*/, imports[7]/*วันสินค้าเข้า[รูปแบบวันที่ DDMMYY]*/, exports[7]/*วันสินค้าออก[รูปแบบวันที่ DDMMYY]*/, stock, access/*จำนวนการกดดูสินค้านั้นๆ*/ , addToCart/*จำนวนการเพิ่มสินค้านั้นๆลงตระกร้า*/ , buy/*จำนวนการซื้อ(ครั้ง)*/ , heightOfTree/*สำหรับหมุนต้นไม้*/);
+        return createnode(ID/*ไอดีสินค้า*/, stockID/*ไอ่ดีสต็อค*/, imports/*วันสินค้าเข้า[รูปแบบวันที่ DDMMYY]*/, exports/*วันสินค้าออก[รูปแบบวันที่ DDMMYY]*/, stock, access/*จำนวนการกดดูสินค้านั้นๆ*/ , addToCart/*จำนวนการเพิ่มสินค้านั้นๆลงตระกร้า*/ , buy/*จำนวนการซื้อ(ครั้ง)*/ );
 
-    //if()
+    if((access+addToCart+buy) <= (node->key))
+        node->left = insert_AVL(node->left, ID/*ไอดีสินค้า*/, stockID/*ไอ่ดีสต็อค*/, imports/*วันสินค้าเข้า[รูปแบบวันที่ DDMMYY]*/, exports/*วันสินค้าออก[รูปแบบวันที่ DDMMYY]*/, stock, access/*จำนวนการกดดูสินค้านั้นๆ*/ , addToCart/*จำนวนการเพิ่มสินค้านั้นๆลงตระกร้า*/ , buy/*จำนวนการซื้อ(ครั้ง)*/ );
+    else if((access+addToCart+buy) > (node->key))
+        node->right = insert_AVL(node->right, ID/*ไอดีสินค้า*/, stockID/*ไอ่ดีสต็อค*/, imports/*วันสินค้าเข้า[รูปแบบวันที่ DDMMYY]*/, exports/*วันสินค้าออก[รูปแบบวันที่ DDMMYY]*/, stock, access/*จำนวนการกดดูสินค้านั้นๆ*/ , addToCart/*จำนวนการเพิ่มสินค้านั้นๆลงตระกร้า*/ , buy/*จำนวนการซื้อ(ครั้ง)*/ );
+    
+    node->heightOfTree = 1+ maxof(height(node->left),height(node->right));
+
+    int balance = getBalance(node);
+
+    //**Balance checking and rotations**
+    //Left Left case(LL)
+    if(balance > 1 && ((access+addToCart+buy) <= node->left->key))
+        return rightRotate(node);
+
+    //Right Right case(RR)
+    if(balance < -1 && ((access+addToCart+buy) > node->right->key))
+        return leftRotate(node);
+
+    //Left Right case(LR)
+    if(balance > 1 && ((access+addToCart+buy) > node->left->key)){
+        node->left = leftRotate(node->left);
+        return rightRotate(node);
+    }
+        
+
+    //Right Left case(RL)
+    if(balance < -1 && ((access+addToCart+buy) <= node->right->key)){
+        node->right = rightRotate(node->right);
+        return leftRotate(node);
+    }
+        
+    return node;
 }
 
 
