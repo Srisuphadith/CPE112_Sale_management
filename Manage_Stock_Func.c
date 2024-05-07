@@ -2,6 +2,7 @@
 #include <AVL.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 struct AVL_Tree*createnode(char ID[6]/*ไอดีสินค้า*/, char stockID[6]/*ไอ่ดีสต็อค*/, char imports[7]/*วันสินค้าเข้า[รูปแบบวันที่ DDMMYY]*/, char exports[7]/*วันสินค้าออก[รูปแบบวันที่ DDMMYY]*/, int stock, int access/*จำนวนการกดดูสินค้านั้นๆ*/ ,int addToCart/*จำนวนการเพิ่มสินค้านั้นๆลงตระกร้า*/ ,int buy/*จำนวนการซื้อ(ครั้ง)*/ ){
     struct AVL_Tree* newnode = (struct AVL_Tree*)malloc(sizeof(struct AVL_Tree));
@@ -116,25 +117,95 @@ struct AVL_Tree *insert_AVL(struct AVL_Tree*node, char ID[6]/*ไอดีสิ
 // แก้ไขสินค้า
 // แก้ไขข้อมูลสินค้า
 // เปลี่ยนแปลงจำนวนสินค้า
-void edit_BS(){}
+void edit_AVL(){}
+
+struct AVL_Tree *minValueNode(struct AVL_Tree *node)
+{
+    struct AVL_Tree *current = node; // Change AVL_tree to AVL_Tree
+
+    /* loop down to find the leftmost leaf */
+    while (current->left != NULL)
+        current = current->left;
+
+    return current;
+}
 
 //ลบสินค้าใน BS Tree
-void del_BS(){}
+struct AVL_Tree *del_AVL(struct AVL_Tree *node,char ID[6] , char stockID[6] , char imports[7] , char exports[7] , int stock, int access , int addToCart , int buy)
+{
+    if (node==NULL)
+    {
+        return node;
+    }
+    
+    if (ID < node->ID)
+    {
+        node->left = del_BS(node->left, ID , stockID , imports , exports, stock, access , addToCart , buy );
+    }
+    else if (ID > node->ID)
+    {
+        node->right = del_BS(node->right, ID, stockID, imports, exports, stock, access, addToCart, buy);
+    }
+    else
+    {
+        if ((node->left == NULL)||(node->right == NULL))
+        {
+            struct AVL_Tree *temp = node->left ? node->left: node->right;
+
+            if (temp == NULL)
+            {
+                temp = node;
+                node = NULL;
+            }
+            else
+            {
+                node = temp;
+            }
+            
+            free(temp);
+        }
+        else
+        {
+            struct AVL_Tree *tempID = minValueNode(node->right);
+            strcpy(node->ID, tempID->ID);
+            node->right = del_BS(node->right, tempID->ID, tempID->stockID, tempID->imports, tempID->exports, tempID->stock, tempID->access, tempID->addToCart, tempID->buy);
+        }
+        
+    }
+}
 
 //ค้นหาสินค้าใน BS_Tree
 // ค้นหาสินค้า
 // ค้นหาสินค้าตามชื่อ รายละเอียด หมวดหมู่
 // ค้นหาสินค้าตามราคา
 // ค้นหาสินค้าตามจำนวนสินค้า
-void search_BS(){}
+bool search_AVL(struct AVL_Tree *node, char ID[6])
+{
+    if (node == NULL)
+    {
+        return false;
+    }
+    else if (node->ID == ID)
+    {
+        return true;
+    }
+}
 
 //กรองสินค้าใน BS_Tree
 // กรองสินค้า
 // กรองสินค้าตามหมวดหมู่/ราคา/จำนวนสินค้า
-void filter_BS(){}
-
-//หมุน BS_Tree
-void rotate_BS(){}
+void filter_AVL(){}
 
 //Traversal BS_Tree To show suggestion right->root->left
-void reverse_inorder(){}
+void reverse_inorder(struct AVL_Tree *node) 
+{
+    if (node == NULL)
+    {
+        return;
+    }
+
+    reverse_inorder(node->right);
+    printf("value");
+    reverse_inorder(node->left);
+    
+}
