@@ -113,11 +113,13 @@ struct AVL_Tree *insert_AVL(struct AVL_Tree*node, char ID[6]/*ไอดีสิ
 }
 
 
-//แก้ไขสินค้าใน BS Tree
+//แก้ไขสินค้าใน AVL Tree
 // แก้ไขสินค้า
 // แก้ไขข้อมูลสินค้า
 // เปลี่ยนแปลงจำนวนสินค้า
-void edit_AVL(){}
+void edit_AVL(){
+
+}
 
 struct AVL_Tree *minValueNode(struct AVL_Tree *node)
 {
@@ -130,7 +132,7 @@ struct AVL_Tree *minValueNode(struct AVL_Tree *node)
     return current;
 }
 
-//ลบสินค้าใน BS Tree
+//ลบสินค้าใน AVL Tree
 struct AVL_Tree *del_AVL(struct AVL_Tree *node,char ID[6] , char stockID[6] , char imports[7] , char exports[7] , int stock, int access , int addToCart , int buy)
 {
     if (node==NULL)
@@ -174,29 +176,28 @@ struct AVL_Tree *del_AVL(struct AVL_Tree *node,char ID[6] , char stockID[6] , ch
     }
 }
 
-//ค้นหาสินค้าใน BS_Tree
+//ค้นหาสินค้าใน AVL_Tree
 // ค้นหาสินค้า
 // ค้นหาสินค้าตามชื่อ รายละเอียด หมวดหมู่
 // ค้นหาสินค้าตามราคา
 // ค้นหาสินค้าตามจำนวนสินค้า
-bool search_AVL(struct AVL_Tree *node, char ID[6])
-{
+struct AVL_Tree *search_AVL(struct AVL_Tree *node, char ID[6]){
     if (node == NULL)
-    {
-        return false;
-    }
-    else if (node->ID == ID)
-    {
-        return true;
+        return NULL; // ในกรณีไม่ID
+    if (strcmp(ID,node->ID)==0)
+        return node;
+    if (strcmp(ID,node->ID)<0){//ไม่เท่ากัน
+        search_AVL(node->left,ID);
+        search_AVL(node->right,ID);
     }
 }
 
-//กรองสินค้าใน BS_Tree
+//กรองสินค้าใน AVL_Tree
 // กรองสินค้า
 // กรองสินค้าตามหมวดหมู่/ราคา/จำนวนสินค้า
 void filter_AVL(){}
 
-//Traversal BS_Tree To show suggestion right->root->left
+//Traversal AVL_Tree To show suggestion right->root->left
 void reverse_inorder(struct AVL_Tree *node) 
 {
     if (node == NULL)
