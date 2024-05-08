@@ -117,8 +117,25 @@ struct AVL_Tree *insert_AVL(struct AVL_Tree*node, char ID[6]/*ไอดีสิ
 // แก้ไขสินค้า
 // แก้ไขข้อมูลสินค้า
 // เปลี่ยนแปลงจำนวนสินค้า
-void edit_AVL(){
-
+void edit_AVL(struct AVL_Tree *node, char ID[], char newCategory[], char newStockID[])
+{
+    while (node != NULL)
+    {
+        if (strcmp(node->ID, ID) == 0)
+        {
+            strcpy(node->category, newCategory);
+            strcpy(node->stockID, newStockID);
+            return;
+        }
+        else if (strcmp(ID, node->ID) < 0)
+        {
+            node = node->left;
+        }
+        else
+        {
+            node = node->right;
+        }
+    }
 }
 
 struct AVL_Tree *minValueNode(struct AVL_Tree *node)
@@ -133,26 +150,26 @@ struct AVL_Tree *minValueNode(struct AVL_Tree *node)
 }
 
 //ลบสินค้าใน AVL Tree
-struct AVL_Tree *del_AVL(struct AVL_Tree *node,char ID[6] , char stockID[6] , char imports[7] , char exports[7] , int stock, int access , int addToCart , int buy)
+struct AVL_Tree *del_AVL(struct AVL_Tree *node, char ID[6], char stockID[6], char imports[7], char exports[7], int stock, int access, int addToCart, int buy)
 {
-    if (node==NULL)
+    if (node == NULL)
     {
         return node;
     }
-    
-    if (ID < node->ID)
+
+    if (strcmp(ID, node->ID) < 0)
     {
-        node->left = del_BS(node->left, ID , stockID , imports , exports, stock, access , addToCart , buy );
+        node->left = del_AVL(node->left, ID, stockID, imports, exports, stock, access, addToCart, buy);
     }
-    else if (ID > node->ID)
+    else if (strcmp(ID, node->ID) > 0)
     {
-        node->right = del_BS(node->right, ID, stockID, imports, exports, stock, access, addToCart, buy);
+        node->right = del_AVL(node->right, ID, stockID, imports, exports, stock, access, addToCart, buy);
     }
     else
     {
-        if ((node->left == NULL)||(node->right == NULL))
+        if ((node->left == NULL) || (node->right == NULL))
         {
-            struct AVL_Tree *temp = node->left ? node->left: node->right;
+            struct AVL_Tree *temp = node->left ? node->left : node->right;
 
             if (temp == NULL)
             {
@@ -163,50 +180,69 @@ struct AVL_Tree *del_AVL(struct AVL_Tree *node,char ID[6] , char stockID[6] , ch
             {
                 node = temp;
             }
-            
+
             free(temp);
         }
         else
         {
             struct AVL_Tree *tempID = minValueNode(node->right);
             strcpy(node->ID, tempID->ID);
-            node->right = del_BS(node->right, tempID->ID, tempID->stockID, tempID->imports, tempID->exports, tempID->stock, tempID->access, tempID->addToCart, tempID->buy);
+            node->right = del_AVL(node->right, tempID->ID, tempID->stockID, tempID->imports, tempID->exports, tempID->stock, tempID->access, tempID->addToCart, tempID->buy);
         }
-        
     }
-}
 
+    return node;
+}
 //ค้นหาสินค้าใน AVL_Tree
 // ค้นหาสินค้า
 // ค้นหาสินค้าตามชื่อ รายละเอียด หมวดหมู่
 // ค้นหาสินค้าตามราคา
 // ค้นหาสินค้าตามจำนวนสินค้า
-struct AVL_Tree *search_AVL(struct AVL_Tree *node, char ID[6]){
+struct AVL_Tree *search_AVL(struct AVL_Tree *node, char ID[6])
+{
     if (node == NULL)
         return NULL; // ในกรณีไม่ID
-    if (strcmp(ID,node->ID)==0)
+    if (strcmp(ID, node->ID) == 0)
         return node;
-    if (strcmp(ID,node->ID)<0){//ไม่เท่ากัน
-        search_AVL(node->left,ID);
-        search_AVL(node->right,ID);
+    if (strcmp(ID, node->ID) < 0)
+    { // ไม่เท่ากัน
+        return search_AVL(node->left, ID);
+    }
+    else
+    {
+        return search_AVL(node->right, ID);
     }
 }
 
 //กรองสินค้าใน AVL_Tree
 // กรองสินค้า
 // กรองสินค้าตามหมวดหมู่/ราคา/จำนวนสินค้า
-void filter_AVL(){}
+void filter_AVL(struct AVL_Tree *node, char category[])
+{
+    printf("Products in category \"%s\" : \n", category);
+    while (node != NULL)
+    {
+        if (strcmp(node->category, category) == 0)
+        {
+            printf("ID: %s\n", node->ID);
+            printf("Stock ID: %s\n", node->stockID);
+            printf("\n");
+        }
+        node = node->left;
+        node = node->right;
+    }
+}
 
 //Traversal AVL_Tree To show suggestion right->root->left
-void reverse_inorder(struct AVL_Tree *node) 
+void reverse_inOrder(struct AVL_Tree *node) 
 {
     if (node == NULL)
     {
         return;
     }
 
-    reverse_inorder(node->right);
-    printf("value");
-    reverse_inorder(node->left);
+    reverse_inOrder(node->right);
+    printf("value : %s", node->ID);
+    reverse_inOrder(node->left);
     
 }
