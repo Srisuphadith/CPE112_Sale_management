@@ -58,6 +58,20 @@ char **stock_alert(struct AVL_Tree *node){
     // check less than 10 to add to arr
     if( node->stock <= 10){
     }
+    
+}
+void stock_alert(AVL_Tree *tree){
+    
+    if(tree->right != NULL){
+        stock_alert(tree->right);
+    }
+    if(tree->stock <= 5){
+        printf("Out of stock ID = %s\n",tree->ID);
+    }
+    if(tree->left != NULL){
+        stock_alert(tree->left);
+    }
+    return;
 }
 
 //การแจ้งเตือนวันที่ที่แต่ละ vender จะนำสินค้ามาลงในโกดังเรา 
