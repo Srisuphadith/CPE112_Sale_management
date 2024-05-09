@@ -2,20 +2,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "Binary_Search.h"
+#include "AVL.h"
 
 // Function prototypes
 void displayMenu();
-void addToCart(BS_Tree **root, char ID[], int quantity);
-void displayCart(BS_Tree *root);
-void displayCartHelper(BS_Tree *node);
-float calculateTotal(BS_Tree *root);
-void calculateTotalHelper(BS_Tree *node, float *total);
+void addToCart(AVL_Tree **root, char ID[], int quantity);
+void displayCart(AVL_Tree *root);
+void displayCartHelper(AVL_Tree *node);
+float calculateTotal(AVL_Tree *root);
+void calculateTotalHelper(AVL_Tree *node, float *total);
 void pay(float total);
-void printReceipt(BS_Tree *root, float total);
+void printReceipt(AVL_Tree *root, float total);
 
 int main() {
-    BS_Tree *root = NULL; // Initialize the binary search tree
+    AVL_Tree *root = NULL; // Initialize the binary search tree
 
     int choice;
     do {
@@ -69,12 +69,12 @@ void displayMenu() {
 }
 
 // Add a product to the cart
-void addToCart(BS_Tree **root, char ID[], int quantity) {
+void addToCart(AVL_Tree **root, char ID[], int quantity) {
 
 }
 
 // Display the contents of the cart
-void displayCart(BS_Tree *root) {
+void displayCart(AVL_Tree *root) {
     if (root == NULL) {
         printf("Your cart is empty.\n");
     } else {
@@ -85,19 +85,19 @@ void displayCart(BS_Tree *root) {
 }
 
 // Helper function to recursively display the products in the cart
-void displayCartHelper(BS_Tree *node) {
+void displayCartHelper(AVL_Tree *node) {
 
 }
 
 // Calculate the total price of items in the cart
-float calculateTotal(BS_Tree *root) {
+float calculateTotal(AVL_Tree *root) {
     float total = 0.0;
     calculateTotalHelper(root, &total);
     return total;
 }
 
 // Helper function to recursively calculate the total price
-void calculateTotalHelper(BS_Tree *node, float *total) {
+void calculateTotalHelper(AVL_Tree *node, float *total) {
 
 }
 
@@ -108,7 +108,7 @@ void pay(float total) {
 }
 
 // Print the receipt
-void printReceipt(BS_Tree *root, float total) {
+void printReceipt(AVL_Tree *root, float total) {
     printf("Receipt:\n");
     printf("---------------\n");
     displayCartHelper(root);
