@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <Binary_Search.h>
+#include <AVL.h>
 #include <stdlib.h>
 //การจัดการสต็อกสินค้า
 

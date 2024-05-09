@@ -1,15 +1,31 @@
 #include <stdio.h>
-#include <AVL.h>
+//#include <AVL.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 
-struct AVL_Tree*createnode(char ID[6]/*ไอดีสินค้า*/, char stockID[6]/*ไอ่ดีสต็อค*/, char imports[7]/*วันสินค้าเข้า[รูปแบบวันที่ DDMMYY]*/, char exports[7]/*วันสินค้าออก[รูปแบบวันที่ DDMMYY]*/, int stock, int access/*จำนวนการกดดูสินค้านั้นๆ*/ ,int addToCart/*จำนวนการเพิ่มสินค้านั้นๆลงตระกร้า*/ ,int buy/*จำนวนการซื้อ(ครั้ง)*/ ){
+typedef struct AVL_Tree{
+    char ID[6]; // ไอดีสินค้า
+    char stockID[6]; // ไอดีสต็อก
+    char imports[7]; // วันสินค้าเข้า[รูปแบบวันที่ DDMMYY]
+    char exports[7]; // วันสินค้าออก[รูปแบบวันที่ DDMMYY]
+    char category[50]; // หมวดหมู่
+    int stock; // จำนวนสินค้าคงคลัง
+    int access; // จำนวนการกดดูสินค้านั้นๆ
+    int addToCart; // จำนวนการเพิ่มสินค้านั้นๆลงตระกร้า
+    int buy; // จำนวนการซื้อ(ครั้ง)
+    int heightOfTree; // สำหรับความสูงของต้นไม้
+    int key; // ค่าที่เอาไว้วัดระดับการ insert มาจาก access + addToCart + buy
+    struct AVL_Tree *left, *right;
+}AVL_Tree;
+
+struct AVL_Tree*createnode(char ID[6]/*ไอดีสินค้า*/, char stockID[6]/*ไอ่ดีสต็อค*/, char imports[7]/*วันสินค้าเข้า[รูปแบบวันที่ DDMMYY]*/, char exports[7]/*วันสินค้าออก[รูปแบบวันที่ DDMMYY]*/, char category[50],int stock, int access/*จำนวนการกดดูสินค้านั้นๆ*/ ,int addToCart/*จำนวนการเพิ่มสินค้านั้นๆลงตระกร้า*/ ,int buy/*จำนวนการซื้อ(ครั้ง)*/ ){
     struct AVL_Tree* newnode = (struct AVL_Tree*)malloc(sizeof(struct AVL_Tree));
     strcpy(newnode->ID,ID);
     strcpy(newnode->stockID,stockID);
     strcpy(newnode->imports,imports);
     strcpy(newnode->exports,exports);
+    strcpy(newnode->category,category);
     newnode->stock=stock;
     newnode->access=access;
     newnode->addToCart=addToCart;
@@ -74,14 +90,16 @@ struct AVL_Tree *leftRotate(struct AVL_Tree *x){
 // กรอกข้อมูลสินค้า เช่น ชื่อ รหัส
 // ุจำนวนสินค้าคงคลัง
 
-struct AVL_Tree *insert_AVL(struct AVL_Tree*node, char ID[6]/*ไอดีสินค้า*/, char stockID[6]/*ไอ่ดีสต็อค*/, char imports[7]/*วันสินค้าเข้า[รูปแบบวันที่ DDMMYY]*/, char exports[7]/*วันสินค้าออก[รูปแบบวันที่ DDMMYY]*/, int stock, int access/*จำนวนการกดดูสินค้านั้นๆ*/ ,int addToCart/*จำนวนการเพิ่มสินค้านั้นๆลงตระกร้า*/ ,int buy/*จำนวนการซื้อ(ครั้ง)*/){
+struct AVL_Tree *insert_AVL(struct AVL_Tree*node, char ID[6]/*ไอดีสินค้า*/, char stockID[6]/*ไอ่ดีสต็อค*/
+, char imports[7]/*วันสินค้าเข้า[รูปแบบวันที่ DDMMYY]*/, char exports[7]/*วันสินค้าออก[รูปแบบวันที่ DDMMYY]*/,char category[50], int stock,
+ int access/*จำนวนการกดดูสินค้านั้นๆ*/ ,int addToCart/*จำนวนการเพิ่มสินค้านั้นๆลงตระกร้า*/ ,int buy/*จำนวนการซื้อ(ครั้ง)*/){
     if(node == NULL)
-        return createnode(ID/*ไอดีสินค้า*/, stockID/*ไอ่ดีสต็อค*/, imports/*วันสินค้าเข้า[รูปแบบวันที่ DDMMYY]*/, exports/*วันสินค้าออก[รูปแบบวันที่ DDMMYY]*/, stock, access/*จำนวนการกดดูสินค้านั้นๆ*/ , addToCart/*จำนวนการเพิ่มสินค้านั้นๆลงตระกร้า*/ , buy/*จำนวนการซื้อ(ครั้ง)*/ );
+        return createnode(ID/*ไอดีสินค้า*/, stockID/*ไอ่ดีสต็อค*/, imports/*วันสินค้าเข้า[รูปแบบวันที่ DDMMYY]*/, exports/*วันสินค้าออก[รูปแบบวันที่ DDMMYY]*/, category, stock, access/*จำนวนการกดดูสินค้านั้นๆ*/ , addToCart/*จำนวนการเพิ่มสินค้านั้นๆลงตระกร้า*/ , buy/*จำนวนการซื้อ(ครั้ง)*/ );
 
     if((access+addToCart+buy) <= (node->key))
-        node->left = insert_AVL(node->left, ID/*ไอดีสินค้า*/, stockID/*ไอ่ดีสต็อค*/, imports/*วันสินค้าเข้า[รูปแบบวันที่ DDMMYY]*/, exports/*วันสินค้าออก[รูปแบบวันที่ DDMMYY]*/, stock, access/*จำนวนการกดดูสินค้านั้นๆ*/ , addToCart/*จำนวนการเพิ่มสินค้านั้นๆลงตระกร้า*/ , buy/*จำนวนการซื้อ(ครั้ง)*/ );
+        node->left = insert_AVL(node->left, ID/*ไอดีสินค้า*/, stockID/*ไอ่ดีสต็อค*/, imports/*วันสินค้าเข้า[รูปแบบวันที่ DDMMYY]*/, exports/*วันสินค้าออก[รูปแบบวันที่ DDMMYY]*/, category,stock, access/*จำนวนการกดดูสินค้านั้นๆ*/ , addToCart/*จำนวนการเพิ่มสินค้านั้นๆลงตระกร้า*/ , buy/*จำนวนการซื้อ(ครั้ง)*/ );
     else if((access+addToCart+buy) > (node->key))
-        node->right = insert_AVL(node->right, ID/*ไอดีสินค้า*/, stockID/*ไอ่ดีสต็อค*/, imports/*วันสินค้าเข้า[รูปแบบวันที่ DDMMYY]*/, exports/*วันสินค้าออก[รูปแบบวันที่ DDMMYY]*/, stock, access/*จำนวนการกดดูสินค้านั้นๆ*/ , addToCart/*จำนวนการเพิ่มสินค้านั้นๆลงตระกร้า*/ , buy/*จำนวนการซื้อ(ครั้ง)*/ );
+        node->right = insert_AVL(node->right, ID/*ไอดีสินค้า*/, stockID/*ไอ่ดีสต็อค*/, imports/*วันสินค้าเข้า[รูปแบบวันที่ DDMMYY]*/, exports/*วันสินค้าออก[รูปแบบวันที่ DDMMYY]*/, category ,stock, access/*จำนวนการกดดูสินค้านั้นๆ*/ , addToCart/*จำนวนการเพิ่มสินค้านั้นๆลงตระกร้า*/ , buy/*จำนวนการซื้อ(ครั้ง)*/ );
     
     node->heightOfTree = 1+ maxof(height(node->left),height(node->right));
 
@@ -193,26 +211,23 @@ struct AVL_Tree *del_AVL(struct AVL_Tree *node, char ID[6], char stockID[6], cha
 
     return node;
 }
+
+
 //ค้นหาสินค้าใน AVL_Tree
 // ค้นหาสินค้า
 // ค้นหาสินค้าตามชื่อ รายละเอียด หมวดหมู่
 // ค้นหาสินค้าตามราคา
 // ค้นหาสินค้าตามจำนวนสินค้า
-struct AVL_Tree *search_AVL(struct AVL_Tree *node, char ID[6])
-{
-    if (node == NULL)
-        return NULL; // ในกรณีไม่ID
-    if (strcmp(ID, node->ID) == 0)
-        return node;
-    if (strcmp(ID, node->ID) < 0)
-    { // ไม่เท่ากัน
-        return search_AVL(node->left, ID);
-    }
-    else
-    {
-        return search_AVL(node->right, ID);
-    }
+struct AVL_Tree *searchAVL(AVL_Tree *node, char ID[6]) {
+  if (node == NULL || strcmp(node->ID, ID) == 0)
+    return node;
+
+  if (strcmp(ID, node->ID) < 0)
+    return searchAVL(node->left, ID);
+
+  return searchAVL(node->right, ID);
 }
+
 
 //กรองสินค้าใน AVL_Tree
 // กรองสินค้า
@@ -233,6 +248,22 @@ void filter_AVL(struct AVL_Tree *node, char category[])
     }
 }
 
+
+//สำหรับ test
+void displayNode(AVL_Tree *node) {
+  printf("ID: %s\n", node->ID);
+  printf("Stock ID: %s\n", node->stockID);
+  printf("Imports: %s\n", node->imports);
+  printf("Exports: %s\n", node->exports);
+  printf("Category: %s\n", node->category);
+  printf("Stock: %d\n", node->stock);
+  printf("Access: %d\n", node->access);
+  printf("Add to Cart: %d\n", node->addToCart);
+  printf("Buy: %d\n", node->buy);
+  printf("Key: %d\n", node->key);
+}
+
+
 //Traversal AVL_Tree To show suggestion right->root->left
 void reverse_inOrder(struct AVL_Tree *node) 
 {
@@ -242,7 +273,24 @@ void reverse_inOrder(struct AVL_Tree *node)
     }
 
     reverse_inOrder(node->right);
-    printf("value : %s", node->ID);
+    displayNode(node);
     reverse_inOrder(node->left);
     
+}
+
+int main() {
+  AVL_Tree *root = NULL;
+  char ID[6], stockID[6], imports[7], exports[7], category[50];
+  int stock, access, addToCart, buy, n;
+
+  // รับจำนวนสินค้า
+  scanf("%d", &n);
+
+  // รับข้อมูลสินค้าและเพิ่มลงในต้นไม้ AVL
+  for (int i = 0; i < n; ++i) {
+    scanf("%s %s %s %s %s %d %d %d %d", ID, stockID, imports, exports, category, &stock, &access, &addToCart, &buy);
+    root = insert_AVL(root, ID, stockID, imports, exports, category, stock,access, addToCart, buy);
+  }
+
+    reverse_inOrder(root);
 }
