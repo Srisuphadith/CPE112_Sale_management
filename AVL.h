@@ -14,3 +14,9 @@ typedef struct AVL_Tree{
     int key; // ค่าที่เอาไว้วัดระดับการ insert มาจาก access + addToCart + buy
     struct AVL_Tree *left, *right;
 }AVL_Tree;
+
+typedef struct out_of_stock_list
+{
+    char ID[6];
+    struct out_of_stock_list *next;
+} out_of_stock_list;
