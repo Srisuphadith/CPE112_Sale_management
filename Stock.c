@@ -2,7 +2,6 @@
 #include <AVL.h>
 #include <stdlib.h>
 #include<math.h>
-#include "Manage_Stock_Func.c"
 //การจัดการสต็อกสินค้า
 
 // ตรวจสอบจำนวนสินค้า
