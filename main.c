@@ -30,7 +30,7 @@ int main()
             case 3:
                 /*history*/ 
                 //วิธีใช้ เเละวิธีเช็ค
-                // if (!history_sh("user.txt"))
+                // if (!history_sh("user.txt",12))
                 // {
                 //     printf("file doesnt exits");
                 // }
@@ -86,9 +86,15 @@ int history_sh(char file_name[], int user_id)
     {
         return 0;
     }
-    // ส่วนที่เอาไว้วนลูปเเสดง history
-    // user_id เป็นเงื่อนไขในการเเสดง history
-
+    char buffer[255][255];
+    int i = 0;
+    while (fgets(buffer[i], 255, fp))
+    {
+        i++;
+    }
+    // for(int j = 0;j<=i;j++){
+    //     printf("%s",bff[j]);
+    // }
     fclose(fp);
     return 1;
 }
