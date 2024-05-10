@@ -26,6 +26,10 @@ int main() {
                 /*history*/
                 break;
             
+            case -1:
+                /*exit*/
+                break;
+            
             default:
                 printf("please enter number between 1-3");
             }
@@ -42,6 +46,10 @@ int main() {
 
             case 2:
                 /*report ***optional*/
+                break;
+
+            case -1:
+                /*exit*/
                 break;
             
             default:
