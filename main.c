@@ -4,6 +4,10 @@
 #include <string.h>
 #include <stdbool.h>
 
+
+
+history_sh(char file_name[],int user_id);
+
 int main() {
     int userChoice , adminChoice;
 
@@ -61,4 +65,16 @@ int main() {
         printf("username or password is not valid.");
     }
 
+}
+
+int history_sh(char file_name[],int user_id){
+    FILE* fp = fopen(file_name,"r");
+    if(fp == NULL){
+        return 0;
+    }
+    //ส่วนที่เอาไว้วนลูปเเสดง history
+    //user_id เป็นเงื่อนไขในการเเสดง history 
+
+    fclose(fp);
+    return 1;
 }
