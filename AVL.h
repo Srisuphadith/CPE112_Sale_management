@@ -1,6 +1,7 @@
 #include<stdio.h>
 
 typedef struct AVL_Tree{
+    char NameofProduct[50];
     char ID[6]; // ไอดีสินค้า
     char stockID[6]; // ไอดีสต็อก
     char imports[7]; // วันสินค้าเข้า[รูปแบบวันที่ DDMMYY]

@@ -98,3 +98,24 @@ int history_sh(char file_name[], int user_id)
     fclose(fp);
     return 1;
 }
+
+// int history(struct AVL_Tree *root, const char file[], int user_id, int buy)
+// {
+//     FILE *fp = fopen(file, "r");
+//     if (fp == NULL)
+//     {
+//         printf("You didn't buy anything.\n");
+//         return 0;
+//     }
+
+//     struct AVL_Tree *newNode = NULL;
+//     while (fscanf(fp, " %s %s %d", newNode->ID, newNode->NameofProduct, &newNode->buy) != EOF)
+//     {
+//         printf("User: %d\n", user_id);
+//         printf("Name of product: %s, ID: %s, Quantity: %d\n", newNode->NameofProduct, newNode->ID, newNode->buy);
+//         printf("------------------------------------------\n");
+//     }
+
+//     fclose(fp);
+//     return 1; 
+// }
