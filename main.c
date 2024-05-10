@@ -57,6 +57,8 @@ int main() {
             }
 
         }
+    }else{
+        printf("username or password is not valid.");
     }
 
 }
