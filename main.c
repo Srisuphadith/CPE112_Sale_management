@@ -4,18 +4,19 @@
 #include <string.h>
 #include <stdbool.h>
 
+history_sh(char file_name[], int user_id);
 
+int main()
+{
+    int userChoice, adminChoice;
 
-history_sh(char file_name[],int user_id);
+    if (/*registerfunction == True*/ 1)
+    {
 
-int main() {
-    int userChoice , adminChoice;
+        // user part
+        if (/*user*/ 1)
+        {
 
-    if(/*registerfunction == True*/1){
-
-        //user part
-        if(/*user*/1){
-            
             switch (userChoice)
             {
             case 1:
@@ -27,20 +28,31 @@ int main() {
                 break;
 
             case 3:
-                /*history*/
+                /*history*/ 
+                //วิธีใช้ เเละวิธีเช็ค
+                // if (!history_sh("user.txt"))
+                // {
+                //     printf("file doesnt exits");
+                // }
+                // else
+                // {
+                //     printf("completly");
+                // }
                 break;
-            
+
             case -1:
                 /*exit*/
                 break;
-            
+
             default:
                 printf("please enter number between 1-3");
             }
             /*shop function*/
-        
-        //admin part
-        }else/*admin*/{
+
+            // admin part
+        }
+        else /*admin*/
+        {
 
             switch (adminChoice)
             {
@@ -55,25 +67,27 @@ int main() {
             case -1:
                 /*exit*/
                 break;
-            
+
             default:
                 printf("please enter number between 1-2");
             }
-
         }
-    }else{
+    }
+    else
+    {
         printf("username or password is not valid.");
     }
-
 }
 
-int history_sh(char file_name[],int user_id){
-    FILE* fp = fopen(file_name,"r");
-    if(fp == NULL){
+int history_sh(char file_name[], int user_id)
+{
+    FILE *fp = fopen(file_name, "r");
+    if (fp == NULL)
+    {
         return 0;
     }
-    //ส่วนที่เอาไว้วนลูปเเสดง history
-    //user_id เป็นเงื่อนไขในการเเสดง history 
+    // ส่วนที่เอาไว้วนลูปเเสดง history
+    // user_id เป็นเงื่อนไขในการเเสดง history
 
     fclose(fp);
     return 1;
