@@ -1,8 +1,11 @@
 #include<stdio.h>
 
 typedef struct AVL_Tree{
+    char NameofProduct[50];
     char ID[6]; // ไอดีสินค้า
     char stockID[6]; // ไอดีสต็อก
+    int price; //ราคาสินค้า
+    int productName[50]; //ชื่อสินค้า
     char imports[7]; // วันสินค้าเข้า[รูปแบบวันที่ DDMMYY]
     char exports[7]; // วันสินค้าออก[รูปแบบวันที่ DDMMYY]
     char category[50]; // หมวดหมู่
@@ -14,3 +17,9 @@ typedef struct AVL_Tree{
     int key; // ค่าที่เอาไว้วัดระดับการ insert มาจาก access + addToCart + buy
     struct AVL_Tree *left, *right;
 }AVL_Tree;
+
+typedef struct out_of_stock_list
+{
+    char ID[6];
+    struct out_of_stock_list *next;
+} out_of_stock_list;
