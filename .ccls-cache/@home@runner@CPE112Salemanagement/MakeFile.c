@@ -9,6 +9,11 @@
 #include "Sell_Product_Func.c"
 #include "Stock.c"
 #include "shop.c"
+#if defined __has_include
+#if __has_include("Manage_Stock_Func.c")
+#include "Manage_Stock_Func.c"
+#endif
+#endif
 
 int history_sh(char file_name[], int user_id);
 
