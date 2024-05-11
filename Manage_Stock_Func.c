@@ -240,6 +240,23 @@ void filter_AVL(struct AVL_Tree *node, char category[])
     }
 }
 
+void filter_from_cat (struct AVL_Tree *node, char category[]){
+    printf("Products in category \"%s\" : \n", category);
+    while (node != NULL)
+    {
+        node = node->right;
+        if (strcmp(node->category, category) == 0)
+        {
+            printf("Stock ID: %s |", node->stockID);
+            printf("Product Name: %d |" , node->productName);
+            printf("Price : %d |",node->price);
+            printf("\n");
+        }
+        node = node->left;
+}
+}
+
+
 // สำหรับ test
 void displayNode(AVL_Tree *node)
 {
