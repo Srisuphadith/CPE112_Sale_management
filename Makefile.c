@@ -5,10 +5,15 @@
 #include <string.h>
 //---------------------
 //#include "admin_report.c"
-#include "Manage_Stock_Func.c"
+// #include "Manage_Stock_Func.c"
 #include "Sell_Product_Func.c"
 #include "Stock.c"
 #include "shop.c"
+#if defined __has_include
+#if __has_include("Manage_Stock_Func.c")
+#include "Manage_Stock_Func.c"
+#endif
+#endif
 
 int history_sh(char file_name[], int user_id);
 
@@ -29,7 +34,7 @@ int main() {
 
       init = insert_AVL(init, tmp->ID, tmp->stockID, tmp->productName,
                         tmp->price, tmp->imports, tmp->exports, tmp->category,
-                        tmp->stock, tmp->access, tmp->addToCart, tmp->buy)
+                        tmp->stock, tmp->access, tmp->addToCart, tmp->buy);
     }
     fclose(fp);
 
