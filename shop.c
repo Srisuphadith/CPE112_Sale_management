@@ -39,28 +39,23 @@ void shop(struct AVL_Tree *node, char *file)
     while (fscanf(allCategories, "%d %c", &choice, category) != EOF)
     {
         strcpy(switchCat[i++], category);
-        printf("%d %s", choice, category);
+        printf("%d %s\n", choice, category);
     }
 
     printf("-1 : Go backward\n");
     printf("What Category you want:\n");
     scanf("%d", &choice);
 
-    switch (choice)
-    {
-    case 1 /*cat 1*/:
-        /* code find that category product*/
-        break;
-
-    case 2 /*cat 2*/:
-
-        break;
-
-    default:
-        printf("Please Enter Number Between 1-10");
+    if(choice > 0 && choice < i){
+        filter_from_cat(node , switchCat[i]);
+    }else{
+        printf("please enter number between 0 to %d or -1 to exit \n", i);
     }
 
-    printf("Enter Product ID");
+}
+
+void buying_from_id(struct AVL_Tree *node , char *file){
+
 }
 
 int main()
