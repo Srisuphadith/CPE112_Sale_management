@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "AVL.h"
-#include "Manage_Stock_func.c"
+#include "Manage_Stock_Func.c"
 
 // search เพื่อหาของนั้นเลย คือการ search
 

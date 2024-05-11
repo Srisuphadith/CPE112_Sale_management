@@ -1,10 +1,16 @@
 #include <stdio.h>
-#include "AVL.h"
+#include "AVL.c"
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+//---------------------
+ //#include "admin_report.c"
+ #include "Manage_Stock_Func.c"
+ //#include "Sell_Product_Func.c"
+ //#include "shop.c"
+ //#include "Stock.c"
 
-history_sh(char file_name[], int user_id);
+int history_sh(char file_name[], int user_id);
 
 int main()
 {

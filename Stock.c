@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "AVL.h"
 #include <stdlib.h>
-#include<math.h>
+#include <math.h>
 //การจัดการสต็อกสินค้า
 
 // ตรวจสอบจำนวนสินค้า
