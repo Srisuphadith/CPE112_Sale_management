@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "AVL.h"
+#include "Manage_Stock_func.c"
 
 // search เพื่อหาของนั้นเลย คือการ search
 
@@ -24,29 +25,42 @@ void searchProduct(struct AVL_Tree *node, char *category)
     reverse_inOrder(node->left);
 }
 
-void shop(struct AVL_Tree *node)
+void shop(struct AVL_Tree *node, char *file)
 {
+    int choice, userChoice,i=0;
+    char category[50] , switchCat[10][50];
+    FILE *allCategories = fopen(file, "r");
 
-    int choice;
+    if (allCategories == NULL)
+        printf("Error! opening file");
+
+
     printf("Categories\n");
-    printf("1 : Technology\n");
-    printf("2 : Outfit\n");
-    printf("3 : SmartPhone\n");
+    while (fscanf(allCategories, "%d %c", &choice, category) != EOF)
+    {
+        strcpy(switchCat[i++], category);
+        printf("%d %s", choice, category);
+    }
+
     printf("-1 : Go backward\n");
     printf("What Category you want:\n");
     scanf("%d", &choice);
 
     switch (choice)
     {
-    case 1 /*tech*/:
-        /* code */
+    case 1 /*cat 1*/:
+        /* code find that category product*/
+        break;
+
+    case 2 /*cat 2*/:
+
         break;
 
     default:
-        break;
+        printf("Please Enter Number Between 1-10");
     }
 
-    printf("Enter")
+    printf("Enter Product ID");
 }
 
 int main()
