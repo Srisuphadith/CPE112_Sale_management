@@ -1,12 +1,14 @@
 #include <stdio.h>
-#include "AVL.h"
+#include "AVL.c"
 #include <stdlib.h>
 #include <math.h>
+#ifndef Manage_Stock_Func_c
+#define Manage_Stock_Func_c
 //การจัดการสต็อกสินค้า
 
 // ตรวจสอบจำนวนสินค้า
 int check_counting_stock(struct AVL_Tree *node, char ID[6]/*ไอดีสินค้า*/){
-    if(search_AVL(node , ID) == 1){
+    if(searchAVL(node , ID) == 1){
         return node->stock;
     }
 }
@@ -104,3 +106,5 @@ void stock_alert(AVL_Tree *tree, out_of_stock_list *head)
     - B Company 13/05/67
 */
 void import_date(){}
+
+#endif

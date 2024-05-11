@@ -2,9 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "AVL.h"
-#include "Manage_Stock_Func.c"
-
+#include "AVL.c"
 // search เพื่อหาของนั้นเลย คือการ search
 
 // shop คือการเข้ามาดูของ ให้เลือกคือ ฮิต หรือ การเลือกประเภทเอง
@@ -58,6 +56,6 @@ void buying_from_id(struct AVL_Tree *node , char *file){
 
 }
 
-int main()
-{
-}
+// int main()
+// {
+// }

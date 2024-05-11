@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "AVL.h"
+#include "AVL.c"
 
 // Function prototypes
 void displayMenu();
@@ -14,50 +14,50 @@ void calculateTotalHelper(AVL_Tree *node, float *total);
 void pay(float total);
 void printReceipt(AVL_Tree *root, float total);
 
-int main() {
-    AVL_Tree *root = NULL; // Initialize the binary search tree
+// int main() {
+//     AVL_Tree *root = NULL; // Initialize the binary search tree
 
-    int choice;
-    do {
-        displayMenu();
-        printf("Enter your choice: ");
-        scanf("%d", &choice);
+//     int choice;
+//     do {
+//         displayMenu();
+//         printf("Enter your choice: ");
+//         scanf("%d", &choice);
 
-        switch(choice) {
-            case 1:
-                // Add product to cart
-                char ID[6];
-                int quantity;
-                printf("Enter product ID and quantity: ");
-                scanf("%s %d", ID, &quantity);
-                addToCart(&root, ID, quantity);
-                break;
-            case 2:
-                // View cart
-                displayCart(root);
-                break;
-            case 3:
-                // Pay
-                if (root == NULL) {
-                    printf("Your cart is empty.\n");
-                } else {
-                    float total = calculateTotal(root);
-                    pay(total);
-                    printReceipt(root, total);
-                    root = NULL; // Reset cart after payment
-                }
-                break;
-            case 4:
-                // Exit
-                printf("Thank you for shopping with us!\n");
-                break;
-            default:
-                printf("Invalid choice. Please try again.\n");
-        }
-    } while (choice != 4);
+//         switch(choice) {
+//             case 1:
+//                 // Add product to cart
+//                 char ID[6];
+//                 int quantity;
+//                 printf("Enter product ID and quantity: ");
+//                 scanf("%s %d", ID, &quantity);
+//                 addToCart(&root, ID, quantity);
+//                 break;
+//             case 2:
+//                 // View cart
+//                 displayCart(root);
+//                 break;
+//             case 3:
+//                 // Pay
+//                 if (root == NULL) {
+//                     printf("Your cart is empty.\n");
+//                 } else {
+//                     float total = calculateTotal(root);
+//                     pay(total);
+//                     printReceipt(root, total);
+//                     root = NULL; // Reset cart after payment
+//                 }
+//                 break;
+//             case 4:
+//                 // Exit
+//                 printf("Thank you for shopping with us!\n");
+//                 break;
+//             default:
+//                 printf("Invalid choice. Please try again.\n");
+//         }
+//     } while (choice != 4);
 
-    return 0;
-}
+//     return 0;
+// }
 
 // Display the main menu
 void displayMenu() {

@@ -5,10 +5,10 @@
 #include <stdbool.h>
 //---------------------
  //#include "admin_report.c"
- #include "Manage_Stock_Func.c"
- //#include "Sell_Product_Func.c"
- //#include "shop.c"
- //#include "Stock.c"
+#include "Manage_Stock_Func.c"
+#include "Sell_Product_Func.c"
+#include "shop.c"
+#include "Stock.c"
 
 int history_sh(char file_name[], int user_id);
 

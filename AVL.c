@@ -1,8 +1,9 @@
-
 #include <stdio.h>
 #ifndef AVL_H
 #define AVL_H
 #define Catagories 4
+
+/*----------------------------AVL_Tree----------------------------*/
 typedef struct AVL_Tree
 {
     char ID[6];           // ไอดีสินค้า
@@ -21,12 +22,16 @@ typedef struct AVL_Tree
     struct AVL_Tree *left, *right;
 } AVL_Tree;
 
+/*----------------------------out_of_stock_list----------------------------*/
 typedef struct out_of_stock_list
 {
     char ID[6];
     struct out_of_stock_list *next;
 } out_of_stock_list;
 
+
+
+/*----------------------------Catagories----------------------------*/
 char catagories[Catagories][50] = {"A", "B", "C", "D"};
 
 // Initialize the matrix to zero
