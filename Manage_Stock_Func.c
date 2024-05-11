@@ -149,62 +149,114 @@ void edit_AVL(struct AVL_Tree *node, char ID[], char newCategory[], char newStoc
     }
 }
 
+//ค้นหาสินค้าใน AVL_Tree
+// ค้นหาสินค้า
+// ค้นหาสินค้าตามชื่อ รายละเอียด หมวดหมู่
+// ค้นหาสินค้าตามราคา
+// ค้นหาสินค้าตามจำนวนสินค้า
+struct AVL_Tree *searchAVL(AVL_Tree *node, char ID[6]) {
+    if (node == NULL )
+        return NULL;
+
+    if (strcmp(node->ID, ID) == 0)
+        return node;
+
+    if (strcmp(ID, node->ID) < 0)
+        return searchAVL(node->left, ID);
+
+    return searchAVL(node->right, ID);
+}
+
 struct AVL_Tree *minValueNode(struct AVL_Tree *node)
 {
-    struct AVL_Tree *current = node; // Change AVL_tree to AVL_Tree
+    struct AVL_Tree *current = node; 
 
-    /* loop down to find the leftmost leaf */
+    // วนลูปลงไปยังโหนดที่มีค่าน้อยที่สุดในส่วนซ้าย
     while (current->left != NULL)
         current = current->left;
 
     return current;
 }
 
-// ลบสินค้าใน AVL Tree
-struct AVL_Tree *del_AVL(struct AVL_Tree *node, char ID[6], char stockID[6], char imports[7], char exports[7], int stock, int access, int addToCart, int buy)
-{
-    if (node == NULL)
-    {
-        return node;
-    }
 
-    if (strcmp(ID, node->ID) < 0)
-    {
-        node->left = del_AVL(node->left, ID, stockID, imports, exports, stock, access, addToCart, buy);
-    }
-    else if (strcmp(ID, node->ID) > 0)
-    {
-        node->right = del_AVL(node->right, ID, stockID, imports, exports, stock, access, addToCart, buy);
-    }
-    else
-    {
-        if ((node->left == NULL) || (node->right == NULL))
-        {
-            struct AVL_Tree *temp = node->left ? node->left : node->right;
+//ลบสินค้าใน AVL Tree
+struct AVL_Tree *deleteNode(struct AVL_Tree *root, char ID[6]) {
 
-            if (temp == NULL)
-            {
-                temp = node;
-                node = NULL;
-            }
-            else
-            {
-                node = temp;
-            }
-
-            free(temp);
+    struct AVL_Tree *target = searchAVL(root,ID);
+    if(target == NULL)
+        return root;
+    // If the ID is same as root's ID, then this is the node to be deleted
+    else {
+        // Node with only one child or no child
+        if (root->left == NULL) {
+            struct AVL_Tree *temp = root->right;
+            free(root);
+            return temp;
+        } else if (root->right == NULL) {
+            struct AVL_Tree *temp = root->left;
+            free(root);
+            return temp;
         }
-        else
-        {
-            struct AVL_Tree *tempID = minValueNode(node->right);
-            strcpy(node->ID, tempID->ID);
-            node->right = del_AVL(node->right, tempID->ID, tempID->stockID, tempID->imports, tempID->exports, tempID->stock, tempID->access, tempID->addToCart, tempID->buy);
-        }
+
+        // Node with two children: get the in-order successor (smallest in the right subtree)
+        struct AVL_Tree *temp = minValueNode(root->right);
+
+        // Copy the in-order successor's content to this node
+        strcpy(root->ID, temp->ID);
+        strcpy(root->stockID, temp->stockID);
+        strcpy(root->imports, temp->imports);
+        strcpy(root->exports, temp->exports);
+        strcpy(root->category, temp->category);
+        root->stock = temp->stock;
+        root->access = temp->access;
+        root->addToCart = temp->addToCart;
+        root->buy = temp->buy;
+        root->key = temp->key;
+
+        // Delete the in-order successor
+        root->right = deleteNode(root->right, temp->ID);
     }
 
-    return node;
+    // If the tree had only one node then return
+    if (root == NULL)
+        return root;
+
+///////////////////////////////////////////coco-Manage-Stock
+    // Update the height of the current node
+    root->heightOfTree = 1 + maxof(height(root->left), height(root->right));
+
+    // Check the balance factor to maintain AVL property
+    int balance = getBalance(root);
+
+    // Left Left Case
+    if (balance > 1 && getBalance(root->left) >= 0)
+        return rightRotate(root);
+
+    // Left Right Case
+    if (balance > 1 && getBalance(root->left) < 0) {
+        root->left = leftRotate(root->left);
+        return rightRotate(root);
+    }
+
+    // Right Right Case
+    if (balance < -1 && getBalance(root->right) <= 0)
+        return leftRotate(root);
+
+    // Right Left Case
+    if (balance < -1 && getBalance(root->right) > 0) {
+        root->right = rightRotate(root->right);
+        return leftRotate(root);
+    }
+
+    return root;
 }
 
+
+
+//กรองสินค้าใน AVL_Tree
+// กรองสินค้า
+// กรองสินค้าตามหมวดหมู่/ราคา/จำนวนสินค้า
+=======
 // ค้นหาสินค้าใน AVL_Tree
 //  ค้นหาสินค้า
 //  ค้นหาสินค้าตามชื่อ รายละเอียด หมวดหมู่
@@ -224,6 +276,8 @@ struct AVL_Tree *searchAVL(AVL_Tree *node, char ID[6])
 // กรองสินค้าใน AVL_Tree
 //  กรองสินค้า
 //  กรองสินค้าตามหมวดหมู่/ราคา/จำนวนสินค้า
+///////////////////////// main
+
 void filter_AVL(struct AVL_Tree *node, char category[])
 {
     printf("Products in category \"%s\" : \n", category);
@@ -301,5 +355,10 @@ int main()
         root = insert_AVL(root, ID, stockID, imports, exports, category, stock, access, addToCart, buy);
     }
 
+
+    // รับข้อมูลสินค้าและเพิ่มลงในต้นไม้ AVL
+    for (int i = 0; i < n; ++i) {
+        scanf("%s %s %s %s %s %d %d %d %d", ID, stockID, imports, exports, category, &stock, &access, &addToCart, &buy);
+        root = insert_AVL(root, ID, stockID, imports, exports, category, stock, access, addToCart, buy);
+    }
     reverse_inOrder(root);
-}
