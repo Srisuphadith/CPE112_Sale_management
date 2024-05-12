@@ -10,7 +10,7 @@
 // #include "Stock.c"
 #include "shop.c"
 
-int history_sh(char file_name[], int user_id);
+int history( const char file[], int user_id);
 
 int main() {
   int choice;
@@ -33,6 +33,7 @@ int main() {
       init = insert_AVL(init, tmp->ID, tmp->stockID, tmp->productName,
                         tmp->price, tmp->imports, tmp->exports, tmp->category,
                         tmp->stock, tmp->access, tmp->addToCart, tmp->buy);
+                        
       // printf("debug3\n");
       printf("%s,%s,%s,%d,%s,%s,%s,%d,%d,%d,%d,%d\n", tmp->ID, tmp->stockID,
              tmp->productName, tmp->price, tmp->imports, tmp->exports,
@@ -63,7 +64,7 @@ int main() {
       case 3:
         /*history*/
         //วิธีใช้ เเละวิธีเช็ค
-        if (!history_sh("userHistory.csv",2))
+        if (!history("userHistory.csv",2))
         {
             printf("file doesnt exits");
         }

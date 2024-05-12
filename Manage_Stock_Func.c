@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+void filter_from_cat(struct AVL_Tree *node, char category[]);
+
 AVL_Tree *createnode(char ID[6], char stockID[6], char productName[50],
                      int price, char imports[7], char exports[7],
                      char category[50], int stock, int access, int addToCart,
