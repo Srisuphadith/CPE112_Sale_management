@@ -63,14 +63,14 @@ int main() {
       case 3:
         /*history*/
         //วิธีใช้ เเละวิธีเช็ค
-        // if (!history_sh("user.txt",12))
-        // {
-        //     printf("file doesnt exits");
-        // }
-        // else
-        // {
-        //     printf("completly");
-        // }
+        if (!history_sh("userHistory.csv",2))
+        {
+            printf("file doesnt exits");
+        }
+        else
+        {
+            printf("completly");
+        }
         break;
 
       case -1:
@@ -108,42 +108,42 @@ int main() {
   }
 }
 
-int history_sh(char file_name[], int user_id) {
-  FILE *fp = fopen(file_name, "r");
-  if (fp == NULL) {
-    return 0;
-  }
-  char buffer[255][255];
-  int i = 0;
-  while (fgets(buffer[i], 255, fp)) {
-    i++;
-  }
+// int history_sh(char file_name[], int user_id) {
+//   FILE *fp = fopen(file_name, "r");
+//   if (fp == NULL) {
+//     return 0;
+//   }
+//   char buffer[255][255];
+//   int i = 0;
+//   while (fgets(buffer[i], 255, fp)) {
+//     i++;
+//   }
   // for(int j = 0;j<=i;j++){
   //     printf("%s",bff[j]);
   // }
-  fclose(fp);
-  return 1;
-}
-
-// int history(struct AVL_Tree *root, const char file[], int user_id, int buy)
-// {
-//     FILE *fp = fopen(file, "r");
-//     if (fp == NULL)
-//     {
-//         printf("You didn't buy anything.\n");
-//         return 0;
-//     }
-
-//     struct AVL_Tree *newNode = NULL;
-//     while (fscanf(fp, " %s %s %d", newNode->ID, newNode->NameofProduct,
-//     &newNode->buy) != EOF)
-//     {
-//         printf("User: %d\n", user_id);
-//         printf("Name of product: %s, ID: %s, Quantity: %d\n",
-//         newNode->NameofProduct, newNode->ID, newNode->buy);
-//         printf("------------------------------------------\n");
-//     }
-
-//     fclose(fp);
-//     return 1;
+//   fclose(fp);
+//   return 1;
 // }
+
+int history( const char file[], int user_id)
+{
+    FILE *fp = fopen(file, "r");
+    if (fp == NULL)
+    {
+        printf("You didn't buy anything.\n");
+        return 0;
+    }
+
+    struct AVL_Tree *newNode = NULL;
+    while (fscanf(fp, " %s %s %d", newNode->ID, newNode->productName,
+    &newNode->buy) != EOF)
+    {
+        printf("User: %d\n", user_id);
+        printf("Name of product: %s, ID: %s, Quantity: %d\n",
+        newNode->productName, newNode->ID, newNode->buy);
+        printf("------------------------------------------\n");
+    }
+
+    fclose(fp);
+    return 1;
+}
