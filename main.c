@@ -16,6 +16,7 @@ int main() {
   int choice;
 
   if (/*registerfunction == True*/ 1) {
+    char username[20] , date[7];
     AVL_Tree *init = NULL, *tmp = (AVL_Tree *)malloc(sizeof(AVL_Tree));
     //เปิดไฟล์
     FILE *fp = fopen("product.csv", "r");
@@ -45,11 +46,13 @@ int main() {
       char searchProduct[50];
       printf("Enter Product You want to find :");
       scanf("%s" , searchProduct);
-      search(searchProduct , init)
+      search(searchProduct , init);
+      buying_from_id("userHistory.csv" , username ,date,"product.csv");
         break;
 
       case 2:
         shop(init, "allCategory.csv");
+        buying_from_id("userHistory.csv" , username ,date,"product.csv");
         break;
 
       case 3:

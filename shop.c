@@ -95,7 +95,7 @@ int buying_from_id(char *file, char *user,char *date , char *stockFile) {
   fclose(fp);
 }
 
-int main() { buying_from_id("userHistory.csv", "9","120567","product.csv"); }
+// int main() { buying_from_id("userHistory.csv", "9","120567","product.csv"); }
 
 // ตรวจสอบจำนวนสินค้า
 int check_counting_stock(struct AVL_Tree *node, char ID[6]) {
