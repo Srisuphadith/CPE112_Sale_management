@@ -54,21 +54,6 @@ void buying_from_id(struct AVL_Tree *node, char *file) {}
 // }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // ตรวจสอบจำนวนสินค้า
 int check_counting_stock(struct AVL_Tree *node, char ID[6]) {
 
@@ -173,3 +158,79 @@ void stock_alert(AVL_Tree *tree, out_of_stock_list *head) {
 void import_date() {}
 
 // #endif // Manage_Stock_Func_c
+
+int findStringLength(char str[])
+{
+  int i = 0, lenght = 0;
+  while (*str != '\0')
+  {
+    lenght++;
+    str++;
+  }
+  return lenght;
+}
+
+int findSubString(char *string1, char *string2)
+{
+  int count = 0, j;
+  char *output;
+  output = NULL;
+  for (j = 0; string1[j] != '\0'; j++)
+  {
+    if (string2[count] != '\0')
+    {
+      if (string1[j] == string2[count])
+      {
+        count++;
+        if (count == 1)
+          output = &string1[j];
+      }
+      else
+        count = 0;
+    }
+    if (count == findStringLength(string2))
+      break;
+  }
+  if (output != NULL)
+    return output - string1;
+  else
+  {
+    return 0;
+  }
+}
+
+// int main()
+// {
+//     char *string1, *string2;
+//     char *output;
+
+//     string1 = "I love CPE";
+//     string2 = "love";
+//     if (findSubString(string1, string2) != 0)
+//         printf("Index of the first occurance = %ld\n", findSubString(string1,
+//         string2));
+//     else
+//         printf("string2 is not a substring of string1\n");
+
+//     return 0;
+// }
+
+void search(char *productName, AVL_Tree *node)
+{
+  if (node == NULL)
+    node = node->right;
+  if (findSubString(productName, node->productName) != 0)
+  {
+    show_shop_item(node);
+  }
+  node = node->left;
+}
+
+int main(void)
+{
+  AVL_Tree *root = NULL;
+  char userSearch[100];
+  scanf("%s", userSearch);
+  search(userSearch, root);
+  return 0;
+}

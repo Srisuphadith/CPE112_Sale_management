@@ -371,40 +371,40 @@ void reverse_inOrder(struct AVL_Tree *node) {
   reverse_inOrder(node->left);
 }
 
-// int main()
-// {
-//     AVL_Tree *root = NULL;
-//     char ID[6], stockID[6], productName[50], imports[7], exports[7], category[50];
-//     int stock, access, addToCart, buy, n, price;
+int main()
+{
+    AVL_Tree *root = NULL;
+    char ID[6], stockID[6], productName[50], imports[7], exports[7], category[50];
+    int stock, access, addToCart, buy, n, price;
 
-//             // รับจำนวนสินค้า
-//             scanf("%d", &n);
+            // รับจำนวนสินค้า
+            scanf("%d", &n);
 
-//     // รับข้อมูลสินค้าและเพิ่มลงในต้นไม้ AVL
-//     for (int i = 0; i < n; ++i)
-//     {
-//       scanf("%s %s %s %d %s %s %s  %d %d %d %d", ID, stockID, productName, &price, imports, exports,
-//             category, &stock, &access, &addToCart, &buy);
-//       root = insert_AVLnew(root,
-//                         ID, stockID, productName, price, imports, exports, category, stock, access, addToCart,
-//                         buy);
-//     }
+    // รับข้อมูลสินค้าและเพิ่มลงในต้นไม้ AVL
+    for (int i = 0; i < n; ++i)
+    {
+      scanf("%s %s %s %d %s %s %s  %d %d %d %d", ID, stockID, productName, &price, imports, exports,
+            category, &stock, &access, &addToCart, &buy);
+      root = insert_AVLnew(root,
+                        ID, stockID, productName, price, imports, exports, category, stock, access, addToCart,
+                        buy);
+    }
 
-//     // // // รับข้อมูลสินค้าและเพิ่มลงในต้นไม้ AVL
-//     // // for (int i = 0; i < n; ++i) {
-//     // //     scanf("%s %s %s %s %s %d %d %d %d", ID, stockID, imports, exports,
-//     // //     category, &stock, &access, &addToCart, &buy); root = insert_AVL(root,
-//     // //     ID, stockID, imports, exports, category, stock, access, addToCart,
-//     // //     buy);
-//     // // }
-//     // deleteNode(root, "22221");
-//     reverse_inOrder(root);
-//     // 22221 00001 ไฟฉายย่อส่วน 12 100567 150567 เทคโนโลยี 20 0 0 0
-//     // 82465 00001 ม้านิลมังกรsamsung 2000000 100567 190567  เทคโนโลยี  55 0 0 0
+    // // // รับข้อมูลสินค้าและเพิ่มลงในต้นไม้ AVL
+    // // for (int i = 0; i < n; ++i) {
+    // //     scanf("%s %s %s %s %s %d %d %d %d", ID, stockID, imports, exports,
+    // //     category, &stock, &access, &addToCart, &buy); root = insert_AVL(root,
+    // //     ID, stockID, imports, exports, category, stock, access, addToCart,
+    // //     buy);
+    // // }
+    // deleteNode(root, "22221");
+    reverse_inOrder(root);
+    // 22221 00001 ไฟฉายย่อส่วน 12 100567 150567 เทคโนโลยี 20 0 0 0
+    // 82465 00001 ม้านิลมังกรsamsung 2000000 100567 190567  เทคโนโลยี  55 0 0 0
 
-//     // root = deleteNodeFromFile(root, "productTestdelete.csv", "22221");
-//     // reverse_inOrder(root);
-// }
+    // root = deleteNodeFromFile(root, "productTestdelete.csv", "22221");
+    // reverse_inOrder(root);
+}
 
 // AVL_Tree *deleteNodeByID(AVL_Tree *root, char ID[6])
 // {
