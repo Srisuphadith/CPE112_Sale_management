@@ -35,13 +35,13 @@ void shop(struct AVL_Tree *node, char *file) {
     sscanf(category_t[j], "%d,%[^,]", &choice, category);
     j++;
   }
-
+  fclose(allCategories);
   printf("-1 : Go backward\n");
   printf("What Category you want:\n");
   scanf("%d", &choice);
 
-  if (choice > 0 && choice < i) {
-    filter_from_cat(node, category_t[i]);
+  if (choice > 0 && choice < j) {
+    filter_from_cat(node, category_t[choice]);
   } else {
     printf("please enter number between 0 to %d or -1 to exit \n", i);
   }
