@@ -23,7 +23,7 @@ void searchProduct(struct AVL_Tree *node, char *category) {
 }
 
 void shop(struct AVL_Tree *node, char *file) {
-  int choice, userChoice, i = 0;
+  int choice, userChoice, i = -1;
   char category[50], switchCat[10][50];
   FILE *allCategories = fopen(file, "r");
 
@@ -31,9 +31,9 @@ void shop(struct AVL_Tree *node, char *file) {
     printf("Error! opening file");
 
   printf("Categories\n");
-  while (fscanf(allCategories, "%d %c", &choice, category) != EOF) {
-    strcpy(switchCat[i++], category);
-    printf("%d %s\n", choice, category);
+  while (fscanf(allCategories, "%d,%[^,]", &choice, category) != EOF) {
+    strcpy(*switchCat+(i++), category);
+    printf("%d,%s,%s\n", choice, category,switchCat[i]);
   }
 
   printf("-1 : Go backward\n");
