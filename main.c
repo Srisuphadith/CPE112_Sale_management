@@ -10,7 +10,7 @@
 // #include "Stock.c"
 #include "shop.c"
 
-int history( const char file[], int user_id);
+int history(char file[], int user_id);
 
 int main() {
   int choice;
@@ -53,13 +53,13 @@ int main() {
         printf("Enter Product You want to find :");
         scanf("%s", searchProduct);
         search(searchProduct, init);
-        buying_from_id("userHistory.csv", username, date, "product.csv");
+        // buying_from_id("userHistory.csv", username, date, "product.csv");
         break;
 
       case 2:
         shop(init, "allCategory.csv");
 
-        buying_from_id("userHistory.csv", username, date, "product.csv");
+        // buying_from_id("userHistory.csv", username, date, "product.csv");
         break;
 
       case 3:
@@ -127,7 +127,7 @@ int main() {
 //   return 1;
 // }
 
-int history( const char file[], int user_id)
+int history(char file[], int user_id)
 {
     FILE *fp = fopen(file, "r");
     if (fp == NULL)
@@ -140,7 +140,7 @@ int history( const char file[], int user_id)
     int user,id;
     char date[7];
     char proID[7];
-    while (fscanf(fp, "%d %d %s %s",&id,&user,date,proID) != EOF)
+    while (fscanf(fp, "%d,%d,%7[^,],%6[^,]",&id,&user,date,proID) != EOF)
     {
       if(user_id == user){
         printf("User: %d\n", user_id);
