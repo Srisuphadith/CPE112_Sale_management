@@ -19,18 +19,21 @@ int main() {
     AVL_Tree *init = NULL, *tmp = (AVL_Tree*)malloc(sizeof(AVL_Tree));
     //เปิดไฟล์
     FILE *fp = fopen("product.csv", "r");
-    while (
-        fscanf(
-            fp,
-            "%[^,],%[^,],%[^,],%d,%[^,],%[^,],%[^,],%d,%d,%d,%d,%d",
+    char buffer[255];
+    while (fgets(buffer, 255, fp)) {
+      //printf("debug1\n");
+      // printf("--%s--",buffer);
+      sscanf(
+            buffer,
+            "%6[^,],%6[^,],%100[^,],%d,%7[^,],%7[^,],%50[^,],%d,%d,%d,%d,%d",
             tmp->ID, tmp->stockID, tmp->productName, &tmp->price, tmp->imports,
             tmp->exports, tmp->category, &tmp->stock, &tmp->access,
-            &tmp->addToCart, &tmp->buy, &tmp->key) != EOF) {
-
-      init = insert_AVL(init, tmp->ID, tmp->stockID, tmp->productName,
-                        tmp->price, tmp->imports, tmp->exports, tmp->category,
-                        tmp->stock, tmp->access, tmp->addToCart, tmp->buy);
-
+            &tmp->addToCart, &tmp->buy, &tmp->key);
+      //printf("debug2\n");
+      // init = insert_AVL(init, tmp->ID, tmp->stockID, tmp->productName,
+      //                   tmp->price, tmp->imports, tmp->exports, tmp->category,
+      //                   tmp->stock, tmp->access, tmp->addToCart, tmp->buy);
+      //printf("debug3\n");
           printf("%s,%s,%s,%d,%s,%s,%s,%d,%d,%d,%d,%d\n",
             tmp->ID, tmp->stockID, tmp->productName, &tmp->price, tmp->imports,
             tmp->exports, tmp->category, &tmp->stock, &tmp->access,
