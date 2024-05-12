@@ -16,28 +16,28 @@ int main() {
   int choice;
 
   if (/*registerfunction == True*/ 1) {
-    AVL_Tree *init = NULL, *tmp = (AVL_Tree*)malloc(sizeof(AVL_Tree));
+    char username[20], date[7];
+    AVL_Tree *init = NULL, *tmp = (AVL_Tree *)malloc(sizeof(AVL_Tree));
     //เปิดไฟล์
     FILE *fp = fopen("product.csv", "r");
     char buffer[255];
     while (fgets(buffer, 255, fp)) {
-      //printf("debug1\n");
-      // printf("--%s--",buffer);
-      sscanf(
-            buffer,
-            "%6[^,],%6[^,],%100[^,],%d,%7[^,],%7[^,],%50[^,],%d,%d,%d,%d,%d",
-            tmp->ID, tmp->stockID, tmp->productName, &tmp->price, tmp->imports,
-            tmp->exports, tmp->category, &tmp->stock, &tmp->access,
-            &tmp->addToCart, &tmp->buy, &tmp->key);
-      //printf("debug2\n");
+      // printf("debug1\n");
+      //  printf("--%s--",buffer);
+      sscanf(buffer,
+             "%6[^,],%6[^,],%100[^,],%d,%7[^,],%7[^,],%50[^,],%d,%d,%d,%d,%d",
+             tmp->ID, tmp->stockID, tmp->productName, &tmp->price, tmp->imports,
+             tmp->exports, tmp->category, &tmp->stock, &tmp->access,
+             &tmp->addToCart, &tmp->buy, &tmp->key);
+      // printf("debug2\n");
       init = insert_AVL(init, tmp->ID, tmp->stockID, tmp->productName,
                         tmp->price, tmp->imports, tmp->exports, tmp->category,
                         tmp->stock, tmp->access, tmp->addToCart, tmp->buy);
-      //printf("debug3\n");
-          printf("%s,%s,%s,%d,%s,%s,%s,%d,%d,%d,%d,%d\n",
-            tmp->ID, tmp->stockID, tmp->productName, tmp->price, tmp->imports,
-            tmp->exports, tmp->category, tmp->stock, tmp->access,
-            tmp->addToCart, tmp->buy, tmp->key);
+      // printf("debug3\n");
+      printf("%s,%s,%s,%d,%s,%s,%s,%d,%d,%d,%d,%d\n", tmp->ID, tmp->stockID,
+             tmp->productName, tmp->price, tmp->imports, tmp->exports,
+             tmp->category, tmp->stock, tmp->access, tmp->addToCart, tmp->buy,
+             tmp->key);
     }
     fclose(fp);
     free(tmp);
@@ -48,11 +48,16 @@ int main() {
 
       switch (choice) {
       case 1:
-        /* search */
+        char searchProduct[50];
+        printf("Enter Product You want to find :");
+        scanf("%s", searchProduct);
+        search(searchProduct, init);
+        buying_from_id("userHistory.csv", username, date, "product.csv");
         break;
 
       case 2:
         shop(init, "allCategory.csv");
+        buying_from_id("userHistory.csv", username, date, "product.csv");
         break;
 
       case 3:
