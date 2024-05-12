@@ -373,86 +373,28 @@ void reverse_inOrder(struct AVL_Tree *node) {
   reverse_inOrder(node->left);
 }
 
-// int main()
-// {
-//     AVL_Tree *root = NULL;
-//     char ID[6], stockID[6], productName[50], imports[7], exports[7], category[50];
-//     int stock, access, addToCart, buy, n, price;
+int main()
+{
+    AVL_Tree *root = NULL;
+    char ID[6], stockID[6], productName[50], imports[7], exports[7], category[50];
+    int stock, access, addToCart, buy, n, price;
 
-//             // รับจำนวนสินค้า
-//             scanf("%d", &n);
+    scanf("%d", &n);
 
-//     // รับข้อมูลสินค้าและเพิ่มลงในต้นไม้ AVL
-//     for (int i = 0; i < n; ++i)
-//     {
-//       scanf("%s %s %s %d %s %s %s  %d %d %d %d", ID, stockID, productName, &price, imports, exports,
-//             category, &stock, &access, &addToCart, &buy);
-//       root = insert_AVLnew(root,
-//                         ID, stockID, productName, price, imports, exports, category, stock, access, addToCart,
-//                         buy);
-//     }
+    // รับข้อมูลสินค้าและเพิ่มลงในต้นไม้ AVL
+    for (int i = 0; i < n; ++i)
+    {
+      scanf("%s %s %s %d %s %s %s  %d %d %d %d", ID, stockID, productName, &price, imports, exports,
+            category, &stock, &access, &addToCart, &buy);
+      root = insert_AVLnew(root,
+                        ID, stockID, productName, price, imports, exports, category, stock, access, addToCart,
+                        buy);
+    }
 
-    // // // รับข้อมูลสินค้าและเพิ่มลงในต้นไม้ AVL
-    // // for (int i = 0; i < n; ++i) {
-    // //     scanf("%s %s %s %s %s %d %d %d %d", ID, stockID, imports, exports,
-    // //     category, &stock, &access, &addToCart, &buy); root = insert_AVL(root,
-    // //     ID, stockID, imports, exports, category, stock, access, addToCart,
-    // //     buy);
-    // // }
-    // deleteNode(root, "22221");
-    // reverse_inOrder(root);
-    // 22221 00001 ไฟฉายย่อส่วน 12 100567 150567 เทคโนโลยี 20 0 0 0
-    // 82465 00001 ม้านิลมังกรsamsung 2000000 100567 190567  เทคโนโลยี  55 0 0 0
+    reverse_inOrder(root);
+    deleteNode(root, "11111");
+    printf("\n\nAfter Delete\n\n");
+    reverse_inOrder(root);
 
-    // root = deleteNodeFromFile(root, "productTestdelete.csv", "22221");
-    // reverse_inOrder(root);
-// }
-
-// AVL_Tree *deleteNodeByID(AVL_Tree *root, char ID[6])
-// {
-//   if (root == NULL)
-//   {
-//     printf("Tree is empty.\n");
-//     return root;
-//   }
-
-//   root = deleteNode(root, ID);
-//   return root;
-// }
-
-// int main()
-// {
-//   AVL_Tree *root = NULL;
-//   char ID[6], stockID[6], productName[50], imports[7], exports[7], category[50];
-//   int stock, access, addToCart, buy, n, price;
-
-//   // Read the number of products
-//   scanf("%d", &n);
-
-//   // Loop to read product information and insert into AVL tree
-//   for (int i = 0; i < n; ++i)
-//   {
-//     // Read product information
-//     scanf("%s %s %s %d %s %s %s %d %d %d %d", ID, stockID, productName, &price, imports, exports,
-//           category, &stock, &access, &addToCart, &buy);
-
-//     // Insert product into AVL tree
-//     printf("Why\n");
-//     root = insert_AVLnew(root, ID, stockID, productName, price, imports, exports, category, stock, access, addToCart, buy);
-//   }
-
-//   // Perform any other operations you need on the AVL tree
-//   // deleteNodeNEW(root, "22221");
-//   reverse_inOrder(root);
-//   // root = deleteNode(root, "22221");
-
-//   //Test delete
-//   /*2 
-//   22221 00001 ไฟฉายย่อส่วน 12 100567 150567 เทคโนโลยี 20 0 0 0 
-//   82465 00001 ม้านิลมังกรsamsung 2000000 100567 190567 เทคโนโลยี 55 0 0 0 */
-
-//   printf("\nAfter delete\n\n");
-//   reverse_inOrder(root);
-
-//   return 0;
-// }
+    return 0;
+}
