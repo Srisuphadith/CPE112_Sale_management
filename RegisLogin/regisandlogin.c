@@ -129,8 +129,8 @@ void login(const UserManager *um) {
     scanf("%s", username);
     for (int i = 0; i < um->total_users; i++) {
     if (strcmp(username, um->users[i].username) != 0){
-            printf("username not found, please register first\n");
-            exit(0);
+            printf("username not found, please register first.\n");
+            return;
         }
     }
     printf("Enter password: ");
