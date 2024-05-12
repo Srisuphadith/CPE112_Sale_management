@@ -7,13 +7,8 @@
 //#include "admin_report.c"
 // #include "Manage_Stock_Func.c"
 #include "Sell_Product_Func.c"
-#include "Stock.c"
+// #include "Stock.c"
 #include "shop.c"
-#if defined __has_include
-#if __has_include("Manage_Stock_Func.c")
-#include "Manage_Stock_Func.c"
-#endif
-#endif
 
 int history_sh(char file_name[], int user_id);
 
@@ -21,22 +16,31 @@ int main() {
   int choice;
 
   if (/*registerfunction == True*/ 1) {
-    AVL_Tree *init = NULL, *tmp = NULL;
+    AVL_Tree *init = NULL, *tmp = (AVL_Tree*)malloc(sizeof(AVL_Tree));
     //เปิดไฟล์
     FILE *fp = fopen("product.csv", "r");
-    while (
-        fscanf(
-            fp,
-            " %[^,], %[^,], %[^,], %d, %[^,], %[^,], %[^,], %d, %d, %d, %d, %d",
+    char buffer[255];
+    while (fgets(buffer, 255, fp)) {
+      //printf("debug1\n");
+      // printf("--%s--",buffer);
+      sscanf(
+            buffer,
+            "%6[^,],%6[^,],%100[^,],%d,%7[^,],%7[^,],%50[^,],%d,%d,%d,%d,%d",
             tmp->ID, tmp->stockID, tmp->productName, &tmp->price, tmp->imports,
             tmp->exports, tmp->category, &tmp->stock, &tmp->access,
-            &tmp->addToCart, &tmp->buy, &tmp->key) != EOF) {
-
+            &tmp->addToCart, &tmp->buy, &tmp->key);
+      //printf("debug2\n");
       init = insert_AVL(init, tmp->ID, tmp->stockID, tmp->productName,
                         tmp->price, tmp->imports, tmp->exports, tmp->category,
                         tmp->stock, tmp->access, tmp->addToCart, tmp->buy);
+      //printf("debug3\n");
+          printf("%s,%s,%s,%d,%s,%s,%s,%d,%d,%d,%d,%d\n",
+            tmp->ID, tmp->stockID, tmp->productName, tmp->price, tmp->imports,
+            tmp->exports, tmp->category, tmp->stock, tmp->access,
+            tmp->addToCart, tmp->buy, tmp->key);
     }
     fclose(fp);
+    free(tmp);
 
     scanf("%d", &choice);
     // user part

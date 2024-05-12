@@ -122,6 +122,57 @@ AVL_Tree *insert_AVL(struct AVL_Tree *node, char ID[6], char stockID[6],
   return node;
 }
 
+AVL_Tree *insert_AVLnew(struct AVL_Tree *node, char ID[6], char stockID[6],
+                     char productName[50], int price, char imports[7],
+                     char exports[7], char category[50], int stock, int access,
+                     int addToCart, int buy)
+{
+  if (node == NULL)
+    return createnode(ID, stockID, productName, price, imports, exports,
+                      category, stock, access, addToCart, buy);
+
+  // Calculate the key for the new node
+  int newKey = access + addToCart + buy;
+
+  // Compare the key of the new node with the key of the current node
+  if (newKey <= node->key)
+    node->left = insert_AVL(node->left, ID, stockID, productName, price, imports,
+                            exports, category, stock, access, addToCart, buy);
+  else
+    node->right = insert_AVL(node->right, ID, stockID, productName, price, imports,
+                             exports, category, stock, access, addToCart, buy);
+
+  // Update the height of the current node
+  node->heightOfTree = 1 + maxof(height(node->left), height(node->right));
+
+  // Check balance and perform rotations if necessary
+  int balance = getBalance(node);
+
+  // Left Left case(LL)
+  if (balance > 1 && newKey <= node->left->key)
+    return rightRotate(node);
+
+  // Right Right case(RR)
+  if (balance < -1 && newKey > node->right->key)
+    return leftRotate(node);
+
+  // Left Right case(LR)
+  if (balance > 1 && newKey > node->left->key)
+  {
+    node->left = leftRotate(node->left);
+    return rightRotate(node);
+  }
+
+  // Right Left case(RL)
+  if (balance < -1 && newKey <= node->right->key)
+  {
+    node->right = rightRotate(node->right);
+    return leftRotate(node);
+  }
+
+  return node;
+}
+
 // แก้ไขสินค้าใน AVL Tree
 //  แก้ไขสินค้า
 //  แก้ไขข้อมูลสินค้า
@@ -293,11 +344,14 @@ void filter_from_cat(struct AVL_Tree *node, char category[]) {
   }
 }
 
+
+
 // สำหรับ test
 void displayNode(AVL_Tree *node) {
   printf("ID: %s\n", node->ID);
   printf("Stock ID: %s\n", node->stockID);
   printf("Imports: %s\n", node->imports);
+  printf("Price: %d\n", node->price);
   printf("Exports: %s\n", node->exports);
   printf("Category: %s\n", node->category);
   printf("Stock: %d\n", node->stock);
@@ -305,6 +359,7 @@ void displayNode(AVL_Tree *node) {
   printf("Add to Cart: %d\n", node->addToCart);
   printf("Buy: %d\n", node->buy);
   printf("Key: %d\n", node->key);
+  printf("-----------------\n");
 }
 
 // Traversal AVL_Tree To show suggestion right->root->left
@@ -321,27 +376,83 @@ void reverse_inOrder(struct AVL_Tree *node) {
 // int main()
 // {
 //     AVL_Tree *root = NULL;
-//     char ID[6], stockID[6], imports[7], exports[7], category[50];
-//     int stock, access, addToCart, buy, n;
+//     char ID[6], stockID[6], productName[50], imports[7], exports[7], category[50];
+//     int stock, access, addToCart, buy, n, price;
 
-//     // รับจำนวนสินค้า
-//     scanf("%d", &n);
+//             // รับจำนวนสินค้า
+//             scanf("%d", &n);
 
 //     // รับข้อมูลสินค้าและเพิ่มลงในต้นไม้ AVL
 //     for (int i = 0; i < n; ++i)
 //     {
-//         scanf("%s %s %s %s %s %d %d %d %d", ID, stockID, imports, exports,
-//         category, &stock, &access, &addToCart, &buy); root = insert_AVL(root,
-//         ID, stockID, imports, exports, category, stock, access, addToCart,
-//         buy);
+//       scanf("%s %s %s %d %s %s %s  %d %d %d %d", ID, stockID, productName, &price, imports, exports,
+//             category, &stock, &access, &addToCart, &buy);
+//       root = insert_AVLnew(root,
+//                         ID, stockID, productName, price, imports, exports, category, stock, access, addToCart,
+//                         buy);
 //     }
 
-//     // รับข้อมูลสินค้าและเพิ่มลงในต้นไม้ AVL
-//     for (int i = 0; i < n; ++i) {
-//         scanf("%s %s %s %s %s %d %d %d %d", ID, stockID, imports, exports,
-//         category, &stock, &access, &addToCart, &buy); root = insert_AVL(root,
-//         ID, stockID, imports, exports, category, stock, access, addToCart,
-//         buy);
-//     }
-//     reverse_inOrder(root);
+    // // // รับข้อมูลสินค้าและเพิ่มลงในต้นไม้ AVL
+    // // for (int i = 0; i < n; ++i) {
+    // //     scanf("%s %s %s %s %s %d %d %d %d", ID, stockID, imports, exports,
+    // //     category, &stock, &access, &addToCart, &buy); root = insert_AVL(root,
+    // //     ID, stockID, imports, exports, category, stock, access, addToCart,
+    // //     buy);
+    // // }
+    // deleteNode(root, "22221");
+    // reverse_inOrder(root);
+    // 22221 00001 ไฟฉายย่อส่วน 12 100567 150567 เทคโนโลยี 20 0 0 0
+    // 82465 00001 ม้านิลมังกรsamsung 2000000 100567 190567  เทคโนโลยี  55 0 0 0
+
+    // root = deleteNodeFromFile(root, "productTestdelete.csv", "22221");
+    // reverse_inOrder(root);
+// }
+
+// AVL_Tree *deleteNodeByID(AVL_Tree *root, char ID[6])
+// {
+//   if (root == NULL)
+//   {
+//     printf("Tree is empty.\n");
+//     return root;
+//   }
+
+//   root = deleteNode(root, ID);
+//   return root;
+// }
+
+// int main()
+// {
+//   AVL_Tree *root = NULL;
+//   char ID[6], stockID[6], productName[50], imports[7], exports[7], category[50];
+//   int stock, access, addToCart, buy, n, price;
+
+//   // Read the number of products
+//   scanf("%d", &n);
+
+//   // Loop to read product information and insert into AVL tree
+//   for (int i = 0; i < n; ++i)
+//   {
+//     // Read product information
+//     scanf("%s %s %s %d %s %s %s %d %d %d %d", ID, stockID, productName, &price, imports, exports,
+//           category, &stock, &access, &addToCart, &buy);
+
+//     // Insert product into AVL tree
+//     printf("Why\n");
+//     root = insert_AVLnew(root, ID, stockID, productName, price, imports, exports, category, stock, access, addToCart, buy);
+//   }
+
+//   // Perform any other operations you need on the AVL tree
+//   // deleteNodeNEW(root, "22221");
+//   reverse_inOrder(root);
+//   // root = deleteNode(root, "22221");
+
+//   //Test delete
+//   /*2 
+//   22221 00001 ไฟฉายย่อส่วน 12 100567 150567 เทคโนโลยี 20 0 0 0 
+//   82465 00001 ม้านิลมังกรsamsung 2000000 100567 190567 เทคโนโลยี 55 0 0 0 */
+
+//   printf("\nAfter delete\n\n");
+//   reverse_inOrder(root);
+
+//   return 0;
 // }
