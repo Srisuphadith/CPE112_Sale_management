@@ -226,11 +226,11 @@ void search(char *productName, AVL_Tree *node)
   node = node->left;
 }
 
-int main(void)
-{
-  AVL_Tree *root = NULL;
-  char userSearch[100];
-  scanf("%s", userSearch);
-  search(userSearch, root);
-  return 0;
-}
+// int main()
+// {
+//   AVL_Tree *root = NULL;
+//   char userSearch[100];
+//   scanf("%s", userSearch);
+//   search(userSearch, root);
+//   return 0;
+// }

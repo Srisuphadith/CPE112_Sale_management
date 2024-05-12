@@ -30,14 +30,14 @@ int main() {
             tmp->exports, tmp->category, &tmp->stock, &tmp->access,
             &tmp->addToCart, &tmp->buy, &tmp->key);
       //printf("debug2\n");
-      // init = insert_AVL(init, tmp->ID, tmp->stockID, tmp->productName,
-      //                   tmp->price, tmp->imports, tmp->exports, tmp->category,
-      //                   tmp->stock, tmp->access, tmp->addToCart, tmp->buy);
+      init = insert_AVL(init, tmp->ID, tmp->stockID, tmp->productName,
+                        tmp->price, tmp->imports, tmp->exports, tmp->category,
+                        tmp->stock, tmp->access, tmp->addToCart, tmp->buy);
       //printf("debug3\n");
           printf("%s,%s,%s,%d,%s,%s,%s,%d,%d,%d,%d,%d\n",
-            tmp->ID, tmp->stockID, tmp->productName, &tmp->price, tmp->imports,
-            tmp->exports, tmp->category, &tmp->stock, &tmp->access,
-            &tmp->addToCart, &tmp->buy, &tmp->key);
+            tmp->ID, tmp->stockID, tmp->productName, tmp->price, tmp->imports,
+            tmp->exports, tmp->category, tmp->stock, tmp->access,
+            tmp->addToCart, tmp->buy, tmp->key);
     }
     fclose(fp);
     free(tmp);
