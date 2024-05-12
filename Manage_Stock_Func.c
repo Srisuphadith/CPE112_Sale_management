@@ -332,18 +332,19 @@ void filter_AVL(struct AVL_Tree *node, char category[]) {
   }
 }
 
-void filter_from_cat(struct AVL_Tree *node, char category[]) {
-  printf("Products in category \"%s\" : \n", category);
-  while (node != NULL) {
-    node = node->right;
+void filter_from_cat(AVL_Tree *node, char category[]) {
+  // printf("%p" , node);
+    if (node == NULL) {
+    return;
+  }
+    filter_from_cat(node->right , category);
     if (strcmp(node->category, category) == 0) {
       printf("Stock ID: %s |", node->stockID);
       printf("Product Name: %s |", node->productName);
       printf("Price : %d |", node->price);
       printf("\n");
     }
-    node = node->left;
-  }
+    filter_from_cat(node->left , category);
 }
 
 

@@ -58,6 +58,7 @@ int main() {
 
       case 2:
         shop(init, "allCategory.csv");
+
         buying_from_id("userHistory.csv", username, date, "product.csv");
         break;
 
@@ -135,14 +136,17 @@ int history( const char file[], int user_id)
         return 0;
     }
 
-    struct AVL_Tree *newNode = NULL;
-    while (fscanf(fp, " %s %s %d", newNode->ID, newNode->productName,
-    &newNode->buy) != EOF)
+    // struct AVL_Tree *newNode = NULL;
+    int user,id;
+    char date[7];
+    char proID[7];
+    while (fscanf(fp, "%d %d %s %s",&id,&user,date,proID) != EOF)
     {
+      if(user_id == user){
         printf("User: %d\n", user_id);
-        printf("Name of product: %s, ID: %s, Quantity: %d\n",
-        newNode->productName, newNode->ID, newNode->buy);
+        printf("Name of product: %s\n",proID);
         printf("------------------------------------------\n");
+      }
     }
 
     fclose(fp);

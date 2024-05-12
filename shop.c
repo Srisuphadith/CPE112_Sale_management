@@ -22,26 +22,30 @@
 //   reverse_inOrder(node->left);
 // }
 
-void shop(struct AVL_Tree *node, char *file) {
-  int choice, userChoice, i = -1;
-  char category_t[50][50],category[50];
+void shop(AVL_Tree *node, char *file) {
+  int choice[50], userChoice, i = -1;
+  char category_t[50][50],category[50][50];
   FILE *allCategories = fopen(file, "r");
 
   if (allCategories == NULL)
     printf("Error! opening file");
-  int j = 0;
+  int j = 1;
   printf("Categories\n");
   while (fgets(category_t[j],50,allCategories)) {
-    sscanf(category_t[j], "%d,%[^,]", &choice, category);
+    category_t[j][strcspn(category_t[j], "\n")] = 0;
+    printf("||%s||",category_t[j]);
+    sscanf(category_t[j], "%d,%[^,]", &choice[j], category[j]);
+    // printf("%d : %s" , j , category);
     j++;
   }
   fclose(allCategories);
   printf("-1 : Go backward\n");
-  printf("What Category you want:\n");
-  scanf("%d", &choice);
-
-  if (choice > 0 && choice < j) {
-    filter_from_cat(node, category_t[choice]);
+  printf("What Category you want: ");
+  scanf("%d", &userChoice);
+  if (userChoice > 0 && userChoice < j) {
+    printf("-|%s %p|-" , category[userChoice] ,node);
+    printf("Products in category : \"%s\" \n", category[userChoice]);
+    filter_from_cat(node, category[userChoice]);
   } else {
     printf("please enter number between 0 to %d or -1 to exit \n", i);
   }
