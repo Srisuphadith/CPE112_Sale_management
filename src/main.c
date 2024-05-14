@@ -18,8 +18,9 @@ int main() {
   if (/*registerfunction == True*/ 1) {
     char username[20], date[7];
     AVL_Tree *init = NULL, *tmp = (AVL_Tree *)malloc(sizeof(AVL_Tree));
+    // struct Node_LL_Key *head = NULL;
     //เปิดไฟล์
-    FILE *fp = fopen("product.csv", "r");
+    FILE *fp = fopen("../csv/product.csv", "r");
     char buffer[255];
     while (fgets(buffer, 255, fp)) {
       // printf("debug1\n");
@@ -29,10 +30,12 @@ int main() {
              tmp->ID, tmp->stockID, tmp->productName, &tmp->price, tmp->imports,
              tmp->exports, tmp->category, &tmp->stock, &tmp->access,
              &tmp->addToCart, &tmp->buy, &tmp->key);
+
+      // printf("%d\n" , tmp->key);
       // printf("debug2\n");
-      init = insert_AVL(init, tmp->ID, tmp->stockID, tmp->productName,
+      init = insertNodeAVL(init, createNode(tmp->ID, tmp->stockID, tmp->productName,
                         tmp->price, tmp->imports, tmp->exports, tmp->category,
-                        tmp->stock, tmp->access, tmp->addToCart, tmp->buy);
+                        tmp->stock, tmp->access, tmp->addToCart, tmp->buy));
                         
       // printf("debug3\n");
       printf("%s,%s,%s,%d,%s,%s,%s,%d,%d,%d,%d,%d\n", tmp->ID, tmp->stockID,

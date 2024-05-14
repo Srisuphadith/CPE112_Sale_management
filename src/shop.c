@@ -107,7 +107,7 @@ int check_counting_stock(struct AVL_Tree *node, char ID[6]) {
   if (node == NULL) {
     return 0;
   }
-  struct AVL_Tree *temp = searchAVL(node, ID);
+  struct AVL_Tree *temp = searchNode(node, ID);
   if (temp == NULL)
     return 0;
   else

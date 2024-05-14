@@ -38,6 +38,7 @@ struct Node_LL_Key* insert(struct Node_LL_Key* head, int key, struct AVL_Tree* n
   // ค้นหาตำแหน่งที่เหมาะสม
   struct Node_LL_Key* prev = NULL;
   struct Node_LL_Key* curr = head;
+  // printf("%p %d %d" , curr , curr->data_key , key);
   while (curr != NULL && curr->data_key > key) {
     prev = curr;
     curr = curr->next;
@@ -69,34 +70,34 @@ void filter_from_cat(AVL_Tree *node, char category[]) {
   filter_from_cat(node->left, category);
 }
 
-void shop(AVL_Tree *node, char *file) {
-  int choice[50], userChoice, i = -1;
-  char category_t[50][50], category[50][50];
-  FILE *allCategories = fopen(file, "r");
+// void shop(AVL_Tree *node, char *file) {
+//   int choice[50], userChoice, i = -1;
+//   char category_t[50][50], category[50][50];
+//   FILE *allCategories = fopen(file, "r");
 
-  if (allCategories == NULL)
-    printf("Error! opening file");
-  int j = 1;
-  printf("Categories\n");
-  while (fgets(category_t[j], 50, allCategories)) {
-    category_t[j][strcspn(category_t[j], "\n")] = 0;
-    printf("||%s||", category_t[j]);
-    sscanf(category_t[j], "%d,%[^,]", &choice[j], category[j]);
-    // printf("%d : %s" , j , category);
-    j++;
-  }
-  fclose(allCategories);
-  printf("-1 : Go backward\n");
-  printf("What Category you want: ");
-  scanf("%d", &userChoice);
-  if (userChoice > 0 && userChoice < j) {
-    printf("-|%s %p|-", category[userChoice], node);
-    printf("Products in category : \"%s\" \n", category[userChoice]);
-    filter_from_cat(node, category[userChoice]);
-  } else {
-    printf("please enter number between 0 to %d or -1 to exit \n", i);
-  }
-}
+//   if (allCategories == NULL)
+//     printf("Error! opening file");
+//   int j = 1;
+//   printf("Categories\n");
+//   while (fgets(category_t[j], 50, allCategories)) {
+//     category_t[j][strcspn(category_t[j], "\n")] = 0;
+//     printf("||%s||", category_t[j]);
+//     sscanf(category_t[j], "%d,%[^,]", &choice[j], category[j]);
+//     // printf("%d : %s" , j , category);
+//     j++;
+//   }
+//   fclose(allCategories);
+//   printf("-1 : Go backward\n");
+//   printf("What Category you want: ");
+//   scanf("%d", &userChoice);
+//   if (userChoice > 0 && userChoice < j) {
+//     printf("-|%s %p|-", category[userChoice], node);
+//     printf("Products in category : \"%s\" \n", category[userChoice]);
+//     filter_from_cat(node, category[userChoice]);
+//   } else {
+//     printf("please enter number between 0 to %d or -1 to exit \n", i);
+//   }
+// }
 
 // Function to create a new AVL tree node
 struct AVL_Tree *createNode(const char *ID, const char *stockID,
@@ -127,6 +128,9 @@ struct AVL_Tree *createNode(const char *ID, const char *stockID,
 
   newNode->left = NULL;
   newNode->right = NULL;
+
+  // printf(" /////////%p %d \n" , head , key);
+
 
   head = insert(head, key, newNode);
   
@@ -471,50 +475,50 @@ void edit_stock(struct AVL_Tree *node, int key) {
   }
 }
 
-int main() {
-  // Create an empty AVL tree
-  struct AVL_Tree *root = NULL;
+// int main() {
+//   // Create an empty AVL tree
+//   struct AVL_Tree *root = NULL;
 
-  char ID[6], stockID[6], productName[50], imports[7], exports[7], category[50];
-  int stock, access, addToCart, buy, price;
+//   char ID[6], stockID[6], productName[50], imports[7], exports[7], category[50];
+//   int stock, access, addToCart, buy, price;
 
-  int number;
-  scanf("%d", &number);
-  for (int i = 0; i < number; i++) {
-    scanf("%s %s %s %d %s %s %s %d %d %d %d", ID, stockID, productName, &price,
-          imports, exports, category, &stock, &access, &addToCart, &buy);
-    root = insertNodeAVL(root, createNode(ID, stockID, productName, price,
-                                          imports, exports, category, stock,
-                                          access, addToCart, buy));
-  }
+//   int number;
+//   scanf("%d", &number);
+//   for (int i = 0; i < number; i++) {
+//     scanf("%s %s %s %d %s %s %s %d %d %d %d", ID, stockID, productName, &price,
+//           imports, exports, category, &stock, &access, &addToCart, &buy);
+//     root = insertNodeAVL(root, createNode(ID, stockID, productName, price,
+//                                           imports, exports, category, stock,
+//                                           access, addToCart, buy));
+//   }
 
-  // Show the AVL tree nodes before deletion
-  printf("AVL tree nodes before deletion:\n");
-  reverse_inOrder(root);
-  printf("\n");
+//   // Show the AVL tree nodes before deletion
+//   printf("AVL tree nodes before deletion:\n");
+//   reverse_inOrder(root);
+//   printf("\n");
 
-  // Delete a node from the AVL tree (for example, with ID "12345")
-  const char *deleteID = "56849";
-  const char *deletestockID = "00001";
+//   // Delete a node from the AVL tree (for example, with ID "12345")
+//   const char *deleteID = "56849";
+//   const char *deletestockID = "00001";
   
-  struct AVL_Tree *deleteNode = searchNode(root, deleteID);
-  if (deleteNode != NULL) {
-    root = deleteNodeF(root, deleteID, deletestockID);
-    printf("Node with ID %s deleted successfully.\n\n", deleteID);
-  } else {
-    printf("Node with ID %s not found.\n\n", deleteID);
-  }
+//   struct AVL_Tree *deleteNode = searchNode(root, deleteID);
+//   if (deleteNode != NULL) {
+//     root = deleteNodeF(root, deleteID, deletestockID);
+//     printf("Node with ID %s deleted successfully.\n\n", deleteID);
+//   } else {
+//     printf("Node with ID %s not found.\n\n", deleteID);
+//   }
 
-  // Show the AVL tree nodes after deletion
-  printf("AVL tree nodes after deletion:\n");
-  reverse_inOrder(root);
+//   // Show the AVL tree nodes after deletion
+//   printf("AVL tree nodes after deletion:\n");
+//   reverse_inOrder(root);
 
-  //shop(root, "product.csv");
-  print_LL(head);
-  int key;
-  printf("ID and IDstock to Edit");
-  scanf("\n%s %s",ID,stockID);
-  key = atoi(ID)+atoi(stockID);
-  edit_stock(root,key);
-  return 0;
-}
+//   //shop(root, "product.csv");
+//   print_LL(head);
+//   int key;
+//   printf("ID and IDstock to Edit");
+//   scanf("\n%s %s",ID,stockID);
+//   key = atoi(ID)+atoi(stockID);
+//   edit_stock(root,key);
+//   return 0;
+// }
