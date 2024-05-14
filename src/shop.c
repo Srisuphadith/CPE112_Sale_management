@@ -51,7 +51,7 @@ void shop(AVL_Tree *node, char *file) {
   }
 }
 
-int buying_from_id(char *file, char *user,char *date , char *stockFile) {
+void buying_from_id(char *file, char *user,char *date , char *stockFile) {
   char buyItem[6]="22221";
   int i=0 , isSuccess =0;
   FILE *fp = fopen(file, "r");
