@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "AVL.c"
+#include <time.h>
 
 struct Node_LL_Key* head = NULL;
 struct AVL_Tree *root = NULL;
@@ -474,6 +475,77 @@ void edit_stock(struct AVL_Tree *node, int key) {
     
   }
 }
+
+void getCurrentTimeAsString(char *timeString) {
+    time_t currentTime;
+    struct tm *localTime;
+
+    currentTime = time(NULL);
+    localTime = localtime(&currentTime);
+
+    strftime(timeString, 7, "%d%m%y", localTime); // Changed size to 7 and format to %d%m%y
+}
+
+int calculateIntDate(int day, int month, int year) {
+    int intDate = (year - 19) * 365 + ((year - 19) / 4); 
+
+    switch(month) {
+        case 2: intDate += 31; break;
+        case 3: intDate += 59; break;
+        case 4: intDate += 90; break;
+        case 5: intDate += 120; break;
+        case 6: intDate += 151; break;
+        case 7: intDate += 181; break;
+        case 8: intDate += 212; break;
+        case 9: intDate += 243; break;
+        case 10: intDate += 273; break;
+        case 11: intDate += 304; break;
+        case 12: intDate += 334; break;
+    }
+
+    intDate += day - 1;
+
+    if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) {
+        if (month > 2) {
+            intDate += 1;
+        }
+    }
+
+    return intDate;
+}
+
+int calculateDayLeft(struct AVL_Tree *root){
+    char dayNow[7]; // เพิ่ม 1 ตำแหน่งเพื่อรองรับ '\0'
+    char ID[6];
+    char StockID[6];
+
+    int day, month, year, day_Now, month_Now, year_Now;
+    
+    strcpy(ID,root->ID);
+    strcpy(StockID,root->stockID);
+
+
+    int key = atoi(ID) + atoi(StockID);
+    AVL_Tree *target = searchNodeByKEY(root, key);
+
+    // เรียกใช้ฟังก์ชัน getCurrentTimeAsString เพื่อรับวันที่ปัจจุบัน
+    getCurrentTimeAsString(dayNow);
+    sscanf(dayNow, "%2d%2d%2d", &day_Now, &month_Now, &year_Now);
+
+    // แปลงวันที่ที่ได้รับมาจากโหนดเป้าหมายเป็นรูปแบบ int
+    sscanf(target->imports, "%2d%2d%2d", &day, &month, &year);
+
+    // คำนวณค่า int ของวันที่ปัจจุบันและวันที่จากโหนดเป้าหมาย
+    int intDate = calculateIntDate(day, month, year);
+    int intDate_Now = calculateIntDate(day_Now, month_Now, year_Now);
+
+    // คำนวณวันที่เหลือ
+    int daysLeft = intDate - intDate_Now;
+    
+    // แสดงผลลัพธ์
+    return daysLeft;
+}
+
 
 // int main() {
 //   // Create an empty AVL tree
