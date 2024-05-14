@@ -1,6 +1,7 @@
 #include "AVL.c"
 #include "Sell_Product_Func.c"
 #include "shop.c"
+#include "regisandlogin.c" // Include the regisandlogin.c file
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,6 +20,15 @@ int history(char file[], int user_id);
 int main() {
     AVL_Tree *productTree = NULL;
     loadProducts(&productTree);
+
+    char *role = main_login(); // Call the login function
+
+    if (strcmp(role, "Admin") == 0) {
+        adminMenu(productTree); // Call the adminMenu function if the user is an Admin
+    } else {
+        userMenu(productTree); // Call the userMenu function if the user is a User
+    }
+
     userMenu(productTree);
     return 0;
 }

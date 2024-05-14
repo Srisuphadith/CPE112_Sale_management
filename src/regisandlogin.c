@@ -150,7 +150,7 @@ void login(const UserManager *um) {
     log_attempt(username, 0);
 }
 
-int main() {
+int main_login() {
     UserManager um = { .total_users = 0 };
 
     read_users_from_file(&um);
