@@ -5,6 +5,7 @@
 #include "AVL.c"
 #include <time.h>
 
+
 struct Node_LL_Key* head = NULL;
 struct AVL_Tree *root = NULL;
 
@@ -565,8 +566,7 @@ int calculateDayLeft(struct AVL_Tree *root){
 int main() {
    // Create an empty AVL tree
    struct AVL_Tree *root = NULL;
-
-   char ID[6], stockID[6], productName[50], imports[7], exports[7], category[50];
+      char ID[6], stockID[6], productName[50], imports[7], exports[7], category[50];
    int stock, access, addToCart, buy, price;
    int number;
    scanf("%d", &number);
@@ -578,31 +578,8 @@ int main() {
                                            access, addToCart, buy));
    }
    
-   reverse_inOrder(root);
-   int day = calculateDayLeft(root);
+  reverse_inOrder(root);
+  int day = calculateDayLeft(root);
   printf("%d",day);
 
-   /*
-
-   // Show the AVL tree nodes before deletion
-   printf("AVL tree nodes before deletion:\n");
-   reverse_inOrder(root);
-   printf("\n");
-
-   // Delete a node from the AVL tree (for example, with ID "12345")
-   const char *deleteID = "56849";
-   const char *deletestockID = "00001";
-
-   // Show the AVL tree nodes after deletion
-   printf("AVL tree nodes after deletion:\n");
-   reverse_inOrder(root);
-
-   //shop(root, "product.csv");
-   print_LL(head);
-   int key;
-   printf("ID and IDstock to Edit");
-   scanf("\n%s %s",ID,stockID);
-   key = atoi(ID)+atoi(stockID);
-   edit_stock(root,key);
-   return 0;*/
  }
