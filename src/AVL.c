@@ -52,3 +52,10 @@ void addEdge(int arr[][Catagories], int i, int j, int edgeValue) {
   arr[j][i] = edgeValue;
 }
 #endif // AVL_H
+
+/*-----------------------------------------------*/
+struct Node_LL_Key {
+    int data_key;
+    struct AVL_Tree* node;
+    struct Node_LL_Key* next;  // Now using Node_LL_Key for next pointer
+};
