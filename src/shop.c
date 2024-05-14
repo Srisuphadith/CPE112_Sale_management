@@ -51,49 +51,59 @@ void shop(AVL_Tree *node, char *file) {
   }
 }
 
-int buying_from_id(char *file, char *user,char *date , char *stockFile) {
-  char buyItem[6]="22221";
-  int i=0 , isSuccess =0;
+int buying_from_id(char *file, int user, char *date, char *stockFile) {
+  char buyItem[6];
+  int i = 0, isSuccess = 0;
   FILE *fp = fopen(file, "r");
   char last_buffer[255];
   int x;
   while (fgets(last_buffer, 255, fp)) {
   }
-  //printf("%s", last_buffer);
+  // printf("%s", last_buffer);
   fclose(fp);
 
+  printf("Please Enter Product ID :");
+  scanf("%s", buyItem);
 
-  // printf("Please Enter Product ID :");
-  // scanf("%s", buyItem);
-  
-  fp = fopen(file,"a+");
+  fp = fopen(file, "a+");
   sscanf(last_buffer, "%d", &x);
   x++;
-  fprintf(fp, "\n%d,%s,%s,%s", x ,user,date,buyItem);
+  fprintf(fp, "\n%d,%d,%s,%s", x, user, date, buyItem);
   fclose(fp);
   // fprintf(fp, "%s\n", user);
-  AVL_Tree *tmp = (AVL_Tree*)malloc(1000*sizeof(AVL_Tree));
+  AVL_Tree *tmp = (AVL_Tree *)malloc(1000 * sizeof(AVL_Tree));
   fp = fopen(stockFile, "r");
-  while(fgets(last_buffer, 255, fp)){
-    sscanf(last_buffer, "%6[^,],%6[^,],%100[^,],%d,%7[^,],%7[^,],%50[^,],%d,%d,%d,%d,%d",
-                  tmp[i].ID, tmp[i].stockID, tmp[i].productName, &tmp[i].price,
-                  tmp[i].imports, tmp[i].exports, tmp[i].category, &tmp[i].stock,
-                  &tmp[i].access, &tmp[i].addToCart, &tmp[i].buy, &tmp[i].key);
+  while (fgets(last_buffer, 255, fp)) {
+    sscanf(last_buffer,
+           "%6[^,],%6[^,],%100[^,],%d,%7[^,],%7[^,],%50[^,],%d,%d,%d,%d,%d",
+           tmp[i].ID, tmp[i].stockID, tmp[i].productName, &tmp[i].price,
+           tmp[i].imports, tmp[i].exports, tmp[i].category, &tmp[i].stock,
+           &tmp[i].access, &tmp[i].addToCart, &tmp[i].buy, &tmp[i].key);
 
-          printf("%s,%s,%s,%d,%s,%s,%s,%d,%d,%d,%d,%d\n", tmp[i].ID, tmp[i].stockID, tmp[i].productName, tmp[i].price,
-                  tmp[i].imports, tmp[i].exports, tmp[i].category, tmp[i].stock,
-                  tmp[i].access, tmp[i].addToCart, tmp[i].buy, tmp[i].key);
-    if(strcmp(tmp[i].ID,buyItem)==0 && tmp[i].stock > 0 && isSuccess!=1){
-      isSuccess=1;
+    printf("%s,%s,%s,%d,%s,%s,%s,%d,%d,%d,%d,%d\n", tmp[i].ID, tmp[i].stockID,
+           tmp[i].productName, tmp[i].price, tmp[i].imports, tmp[i].exports,
+           tmp[i].category, tmp[i].stock, tmp[i].access, tmp[i].addToCart,
+           tmp[i].buy, tmp[i].key);
+    if (strcmp(tmp[i].ID, buyItem) == 0 && tmp[i].stock > 0 && isSuccess != 1) {
+      isSuccess = 1;
       // printf("HI USER");
       tmp[i].stock--;
     }
     i++;
   }
-  if(isSuccess==1){
-    printf("Success");
-  }else{
-    printf("Fail");
+  fclose(fp);
+  fp = fopen(stockFile, "w");
+  for(int j=0 ; j<=i ; j++){
+    fprintf(fp ,"%s,%s,%s,%d,%s,%s,%s,%d,%d,%d,%d,%d\n", tmp[i].ID, tmp[i].stockID,
+           tmp[i].productName, tmp[i].price, tmp[i].imports, tmp[i].exports,
+           tmp[i].category, tmp[i].stock, tmp[i].access, tmp[i].addToCart,
+           tmp[i].buy, tmp[i].key);
+  }
+
+  if (isSuccess == 1) {
+    return 1;
+  } else {
+    return 0;
   }
   free(tmp);
   fclose(fp);
