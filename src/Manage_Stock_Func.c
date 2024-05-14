@@ -335,6 +335,18 @@ struct AVL_Tree *searchNode(struct AVL_Tree *root, const char *ID) {
   }
 }
 
+struct AVL_Tree *searchNodeByKEY(struct AVL_Tree *root, int key) {
+  if  (root->key == key) {
+    return root;
+  }
+
+  if (root->key < key) {
+    return searchNodeByKEY(root->left, key);
+  } else {
+    return searchNodeByKEY(root->right, key);
+  }
+}
+
 void print_LL(struct Node_LL_Key* head) {
   struct Node_LL_Key* curr = head;
   while (curr != NULL) {
@@ -397,6 +409,68 @@ void displayTree(struct AVL_Tree *root) {
   displayTree(root->left);
 }
 
+
+void edit_stock(struct AVL_Tree *node, int key) {
+  int option;
+  AVL_Tree *target = searchNodeByKEY(node, key);
+  if (target == NULL)
+    printf("ไม่พบสินค้าที่ต้องการแก้ไข\n");
+  else{
+    printf("คุณต้องการแก้ไขข้อมูลใดในสินค้า%s\n",target->productName);
+    printf("0. รหัสสินค้า\n");
+    printf("1. ชื่อสินค้า   \n");
+    printf("2. ราคาสินค้า  \n");
+    printf("3. จำนวนสินค้า \n");
+    printf("4. วันสินค้าเข้า   \n");
+    printf("5. วันสินค้าออก    \n");
+    printf("6. หมวดหมู่สินค้า   \n");
+    printf("7. สต็อกสินค้า      \n");
+    printf("8. back       \n");
+    scanf("%d",&option);
+    switch(option){
+      case 0:
+        printf("กรุณากรอกชื่อIDสินค้าใหม่  ");
+        scanf("%s",target->ID);
+        break;
+      case 1:
+        printf("กรุณากรอกชื่อสินค้าใหม่  ");
+        scanf("%s",target->productName);
+        break;
+      case 2:
+        printf("กรุณากรอกราคาสินค้าใหม่  ");
+        scanf("%d",&target->price);
+        break;
+      case 3:
+        printf("กรุณากรอกจำนวนสินค้าใหม่  ");
+        scanf("%d",&target->stock);
+        break;
+      case 4:
+        printf("กรุณากรอกวันสินค้าเข้าใหม่  ");
+        scanf("%s",target->imports);
+        break;
+      case 5:
+        printf("กรุณากรอกวันสินค้าออกใหม่  ");
+        scanf("%s",target->exports);
+        break;
+      case 6:
+        printf("กรุณากรอกประเภทสินค้าใหม่  ");
+        scanf("%s",target->category);
+        break;
+      case 7:
+        printf("กรุณากรอกเลขสต็อคใหม่  ");
+        scanf("%s",target->stockID);
+        break;
+      case 8:
+        //some function
+        break;
+      default:
+        printf("Invalid option(insert 0-8 )\n");
+        break;
+    }
+    
+  }
+}
+
 int main() {
   // Create an empty AVL tree
   struct AVL_Tree *root = NULL;
@@ -437,5 +511,10 @@ int main() {
 
   //shop(root, "product.csv");
   print_LL(head);
+  int key;
+  printf("ID and IDstock to Edit");
+  scanf("\n%s %s",ID,stockID);
+  key = atoi(ID)+atoi(stockID);
+  edit_stock(root,key);
   return 0;
 }
