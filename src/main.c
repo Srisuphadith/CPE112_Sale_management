@@ -14,7 +14,7 @@ int history(char file[], int user_id);
 
 int main() {
   int choice;
-
+  char searchProduct[50];
   if (/*registerfunction == True*/ 1) {
     char username[20], date[7];
     AVL_Tree *init = NULL, *tmp = (AVL_Tree *)malloc(sizeof(AVL_Tree));
@@ -52,15 +52,14 @@ int main() {
 
       switch (choice) {
       case 1:
-        char searchProduct[50];
         printf("Enter Product You want to find :");
         scanf("%s", searchProduct);
         search(searchProduct, init);
         // buying_from_id("userHistory.csv", username, date, "product.csv");
         break;
-
+      
       case 2:
-        shop(init, "allCategory.csv");
+        shop(init, "../csv/allCategory.csv");
 
         // buying_from_id("userHistory.csv", username, date, "product.csv");
         break;
@@ -68,7 +67,7 @@ int main() {
       case 3:
         /*history*/
         //วิธีใช้ เเละวิธีเช็ค
-        if (!history("userHistory.csv",2))
+        if (!history("../csv/userHistory.csv",2))
         {
             printf("file doesnt exits");
         }
