@@ -55,11 +55,7 @@ void userMenu(AVL_Tree *init) {
             shop(init, "../csv/allCategory.csv");
             break;
         case 3:
-            if (!history("../csv/userHistory.csv", 2)) {
-                printf("file doesn't exist");
-            } else {
-                printf("complete");
-            }
+            history(2);
             break;
         case -1:
             break;
