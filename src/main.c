@@ -78,7 +78,7 @@ int history(char file[], int user_id) {
     int user, id;
     char date[7];
     char proID[7];
-    while (fscanf(fp, "%d,%d,%7[^,],%6[^,]", &id, &user, date, proID) != EOF) {
+    while (fscanf(fp, "%d,%d,%6[^,],%6[^,]", &id, &user, date, proID) != EOF) {
         if (user_id == user) {
             printf("User: %d\n", user_id);
             printf("Name of product: %s\n", proID);
