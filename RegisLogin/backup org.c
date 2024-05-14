@@ -123,11 +123,16 @@ void register_user(UserManager *um) {
     um->total_users++;
 }
 
-char* login(const UserManager *um) {
+void login(const UserManager *um) {
     char username[MAX_LEN], password[MAX_LEN];
     printf("Enter username: ");
     scanf("%s", username);
-
+    for (int i = 0; i < um->total_users; i++) {
+    if (strcmp(username, um->users[i].username) != 0){
+            printf("username not found, please register first.\n");
+            return;
+        }
+    }
     printf("Enter password: ");
     scanf("%s", password);
 
@@ -137,16 +142,19 @@ char* login(const UserManager *um) {
             printf("Login successful!\n");
             printf("Welcome, %s (%s)\n", um->users[i].username, um->users[i].role);
             log_attempt(username, 1);
-            return um->users[i].role;
+            return;
         }
     }
 
     printf("Invalid username or password.\n");
     log_attempt(username, 0);
-    return NULL;
 }
 
-void main_login(UserManager *um) {
+int main_login() {
+    UserManager um = { .total_users = 0 };
+
+    read_users_from_file(&um);
+
     int choice;
     do {
         printf("\n1. Register\n");
@@ -157,22 +165,20 @@ void main_login(UserManager *um) {
 
         switch (choice) {
             case 1:
-                register_user(um);
+                register_user(&um);
                 break;
-            case 2: {
-                char *role = login(um);
-                if (role != NULL) {
-                    return role;
-                }
+            case 2:
+                login(&um);
                 break;
-            }
             case 3:
                 printf("Exiting...\n");
-                return NULL;
+                break;
             default:
                 printf("Invalid choice! Please enter again.\n");
         }
     } while (choice != 3);
 
-    write_users_to_file(um);
+    write_users_to_file(&um);
+
+    return 0;
 }

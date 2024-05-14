@@ -15,21 +15,31 @@
 // Function prototypes
 void loadProducts(AVL_Tree **productTree);
 void userMenu(AVL_Tree *productTree);
+void adminMenu(AVL_Tree *productTree); // Admin menu function prototype
 int history(char file[], int user_id);
 
 int main() {
     AVL_Tree *productTree = NULL;
     loadProducts(&productTree);
 
-    char *role = main_login(); // Call the login function
+    UserManager um = { .total_users = 0 };
+    read_users_from_file(&um);
+    char *role = main_login(&um); // Call the login function
+
+    if (role == NULL) {
+        printf("Exiting...\n");
+        return 0;
+    }
 
     if (strcmp(role, "Admin") == 0) {
         adminMenu(productTree); // Call the adminMenu function if the user is an Admin
-    } else {
+    } else if (strcmp(role, "User") == 0) {
         userMenu(productTree); // Call the userMenu function if the user is a User
+    } else {
+        printf("Unknown role: %s\n", role);
     }
 
-    userMenu(productTree);
+    write_users_to_file(&um);
     return 0;
 }
 
@@ -42,15 +52,15 @@ void loadProducts(AVL_Tree **productTree) {
     }
 
     char buffer[255];
-    while (fgets(buffer, 255, fp)) {
+    while (fgets(buffer, sizeof(buffer), fp)) {
         sscanf(buffer, "%6[^,],%6[^,],%100[^,],%d,%7[^,],%7[^,],%50[^,],%d,%d,%d,%d,%d",
                tmp->ID, tmp->stockID, tmp->productName, &tmp->price, tmp->imports,
                tmp->exports, tmp->category, &tmp->stock, &tmp->access,
                &tmp->addToCart, &tmp->buy, &tmp->key);
         *productTree = insertNodeAVL(*productTree, createNode(tmp->ID, tmp->stockID, tmp->productName,
-                                                 tmp->price, tmp->imports, tmp->exports, 
-                                                 tmp->category, tmp->stock, tmp->access, 
-                                                 tmp->addToCart, tmp->buy));
+                                                              tmp->price, tmp->imports, tmp->exports, 
+                                                              tmp->category, tmp->stock, tmp->access, 
+                                                              tmp->addToCart, tmp->buy));
         printf("%s,%s,%s,%d,%s,%s,%s,%d,%d,%d,%d,%d\n", tmp->ID, tmp->stockID,
                tmp->productName, tmp->price, tmp->imports, tmp->exports,
                tmp->category, tmp->stock, tmp->access, tmp->addToCart, tmp->buy,
@@ -86,6 +96,11 @@ void userMenu(AVL_Tree *productTree) {
         default:
             printf("please enter a number between 1-3");
     }
+}
+
+// Define your adminMenu function here
+void adminMenu(AVL_Tree *productTree) {
+    // Admin-specific functionalities
 }
 
 int history(char file[], int user_id) {
