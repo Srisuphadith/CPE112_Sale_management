@@ -476,16 +476,22 @@ void edit_stock(struct AVL_Tree *node, int key) {
   }
 }
 
+// Function to get the current time as a string in the format DDMMYY
 void getCurrentTimeAsString(char *timeString) {
     time_t currentTime;
     struct tm *localTime;
 
+    // Get the current time
     currentTime = time(NULL);
+    // Convert it to local time representation
     localTime = localtime(&currentTime);
 
-    strftime(timeString, 7, "%d%m%y", localTime); // Changed size to 7 and format to %d%m%y
+    // Format the date as DDMMYY and store it in timeString
+    // Ensure the buffer is large enough (7 bytes: 6 for the date + 1 for the null terminator)
+    strftime(timeString, 7, "%d%m%y", localTime);
 }
 
+// Function to calculate an integer date representation
 int calculateIntDate(int day, int month, int year) {
     int intDate = (year - 19) * 365 + ((year - 19) / 4); 
 
@@ -505,6 +511,7 @@ int calculateIntDate(int day, int month, int year) {
 
     intDate += day - 1;
 
+    // Adjust for leap years
     if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) {
         if (month > 2) {
             intDate += 1;
@@ -514,83 +521,88 @@ int calculateIntDate(int day, int month, int year) {
     return intDate;
 }
 
+// Function to calculate the days left
 int calculateDayLeft(struct AVL_Tree *root){
-    char dayNow[7]; // เพิ่ม 1 ตำแหน่งเพื่อรองรับ '\0'
+    char dayNow[7]; // Increase size to accommodate '\0'
     char ID[6];
     char StockID[6];
 
     int day, month, year, day_Now, month_Now, year_Now;
     
-    strcpy(ID,root->ID);
-    strcpy(StockID,root->stockID);
-
+    strcpy(ID, root->ID);
+    strcpy(StockID, root->stockID);
 
     int key = atoi(ID) + atoi(StockID);
-    AVL_Tree *target = searchNodeByKEY(root, key);
+    struct AVL_Tree *target = searchNodeByKEY(root, key);
 
-    // เรียกใช้ฟังก์ชัน getCurrentTimeAsString เพื่อรับวันที่ปัจจุบัน
+    if (target == NULL) {
+        // Handle the case when the target node is not found
+        printf("Target node not found.\n");
+        return -1;
+    }
+
+    // Get the current date as a string
     getCurrentTimeAsString(dayNow);
     sscanf(dayNow, "%2d%2d%2d", &day_Now, &month_Now, &year_Now);
 
-    // แปลงวันที่ที่ได้รับมาจากโหนดเป้าหมายเป็นรูปแบบ int
-    sscanf(target->imports, "%2d%2d%2d", &day, &month, &year);
+    // Parse the date from the target node
+    sscanf(target->exports, "%2d%2d%2d", &day, &month, &year);
 
-    // คำนวณค่า int ของวันที่ปัจจุบันและวันที่จากโหนดเป้าหมาย
+    // Calculate integer representations of the dates
     int intDate = calculateIntDate(day, month, year);
     int intDate_Now = calculateIntDate(day_Now, month_Now, year_Now);
 
-    // คำนวณวันที่เหลือ
-    int daysLeft = intDate - intDate_Now;
+    // Calculate the remaining days
+    int daysLeft = intDate_Now-intDate;
     
-    // แสดงผลลัพธ์
+    // Print the integer dates for debugging
+    printf("Target Date: %d, Current Date: %d\n", intDate, intDate_Now);
+    
     return daysLeft;
 }
 
 
-// int main() {
-//   // Create an empty AVL tree
-//   struct AVL_Tree *root = NULL;
+int main() {
+   // Create an empty AVL tree
+   struct AVL_Tree *root = NULL;
 
-//   char ID[6], stockID[6], productName[50], imports[7], exports[7], category[50];
-//   int stock, access, addToCart, buy, price;
+   char ID[6], stockID[6], productName[50], imports[7], exports[7], category[50];
+   int stock, access, addToCart, buy, price;
+   int number;
+   scanf("%d", &number);
+   for (int i = 0; i < number; i++) {
+     scanf("%s %s %s %d %s %s %s %d %d %d %d", ID, stockID, productName, &price,
+           imports, exports, category, &stock, &access, &addToCart, &buy);
+     root = insertNodeAVL(root, createNode(ID, stockID, productName, price,
+                                           imports, exports, category, stock,
+                                           access, addToCart, buy));
+   }
+   
+   reverse_inOrder(root);
+   int day = calculateDayLeft(root);
+  printf("%d",day);
 
-//   int number;
-//   scanf("%d", &number);
-//   for (int i = 0; i < number; i++) {
-//     scanf("%s %s %s %d %s %s %s %d %d %d %d", ID, stockID, productName, &price,
-//           imports, exports, category, &stock, &access, &addToCart, &buy);
-//     root = insertNodeAVL(root, createNode(ID, stockID, productName, price,
-//                                           imports, exports, category, stock,
-//                                           access, addToCart, buy));
-//   }
+   /*
 
-//   // Show the AVL tree nodes before deletion
-//   printf("AVL tree nodes before deletion:\n");
-//   reverse_inOrder(root);
-//   printf("\n");
+   // Show the AVL tree nodes before deletion
+   printf("AVL tree nodes before deletion:\n");
+   reverse_inOrder(root);
+   printf("\n");
 
-//   // Delete a node from the AVL tree (for example, with ID "12345")
-//   const char *deleteID = "56849";
-//   const char *deletestockID = "00001";
-  
-//   struct AVL_Tree *deleteNode = searchNode(root, deleteID);
-//   if (deleteNode != NULL) {
-//     root = deleteNodeF(root, deleteID, deletestockID);
-//     printf("Node with ID %s deleted successfully.\n\n", deleteID);
-//   } else {
-//     printf("Node with ID %s not found.\n\n", deleteID);
-//   }
+   // Delete a node from the AVL tree (for example, with ID "12345")
+   const char *deleteID = "56849";
+   const char *deletestockID = "00001";
 
-//   // Show the AVL tree nodes after deletion
-//   printf("AVL tree nodes after deletion:\n");
-//   reverse_inOrder(root);
+   // Show the AVL tree nodes after deletion
+   printf("AVL tree nodes after deletion:\n");
+   reverse_inOrder(root);
 
-//   //shop(root, "product.csv");
-//   print_LL(head);
-//   int key;
-//   printf("ID and IDstock to Edit");
-//   scanf("\n%s %s",ID,stockID);
-//   key = atoi(ID)+atoi(stockID);
-//   edit_stock(root,key);
-//   return 0;
-// }
+   //shop(root, "product.csv");
+   print_LL(head);
+   int key;
+   printf("ID and IDstock to Edit");
+   scanf("\n%s %s",ID,stockID);
+   key = atoi(ID)+atoi(stockID);
+   edit_stock(root,key);
+   return 0;*/
+ }
