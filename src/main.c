@@ -10,7 +10,7 @@
 // Function prototypes
 void loadProducts(AVL_Tree **init);
 void userMenu(AVL_Tree *init);
-int history(int user_id);
+int history(char file[], int user_id);
 
 int main() {
     AVL_Tree *init = NULL;
@@ -56,7 +56,11 @@ void userMenu(AVL_Tree *init) {
             shop(init, "../csv/allCategory.csv");
             break;
         case 3:
-            history(2);
+            if (!history("../csv/userHistory.csv", 2)) {
+                printf("file doesn't exist");
+            } else {
+                printf("complete");
+            }
             break;
         case -1:
             break;
@@ -65,6 +69,7 @@ void userMenu(AVL_Tree *init) {
     }
 }
 
+<<<<<<< HEAD
 int history(int user_id) {
 
   FILE *fp = fopen("userHistory.csv", "r");
@@ -110,12 +115,26 @@ int history(int user_id) {
       }
   
       printf("------------------------------------------\n");
+=======
+int history(char file[], int user_id) {
+    FILE *fp = fopen(file, "r");
+    if (fp == NULL) {
+        printf("You didn't buy anything.\n");
+        return 0;
+>>>>>>> e5358e1304e7e4dc079015aac8ed25ba9b223694
     }
-  }
 
+    int user, id;
+    char date[7];
+    char proID[7];
+    while (fscanf(fp, "%d,%d,%6[^,],%6[^,]", &id, &user, date, proID) != EOF) {
+        if (user_id == user) {
+            printf("User: %d\n", user_id);
+            printf("Name of product: %s\n", proID);
+            printf("------------------------------------------\n");
+        }
+    }
 
-  free(tmp);
-  fclose(fp);
-  fclose(pd);
-  return 1;
+    fclose(fp);
+    return 1;
 }
