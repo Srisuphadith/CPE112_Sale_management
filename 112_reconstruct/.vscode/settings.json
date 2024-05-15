@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "__locale": "cpp",
+        "system_error": "cpp",
+        "__node_handle": "c",
+        "stdio.h": "c",
+        "sstream": "c",
+        "structure.h": "c",
+        "array": "c",
+        "string": "c",
+        "string_view": "c",
+        "vector": "c"
+    }
+}
