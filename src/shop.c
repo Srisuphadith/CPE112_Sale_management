@@ -21,7 +21,7 @@
 //   }
 //   reverse_inOrder(node->left);
 // }
-
+//hello world
 void shop(AVL_Tree *node, char *file) {
   int choice[50], userChoice, i = -1;
   char category_t[50][50],category[50][50];
@@ -51,7 +51,7 @@ void shop(AVL_Tree *node, char *file) {
   }
 }
 
-void buying_from_id(char *file, char *user,char *date , char *stockFile) {
+int buying_from_id(char *file, char *user,char *date , char *stockFile) {
   char buyItem[6]="22221";
   int i=0 , isSuccess =0;
   FILE *fp = fopen(file, "r");
@@ -91,9 +91,9 @@ void buying_from_id(char *file, char *user,char *date , char *stockFile) {
     i++;
   }
   if(isSuccess==1){
-    printf("Success");
+    return 1;
   }else{
-    printf("Fail");
+    return 0;
   }
   free(tmp);
   fclose(fp);
@@ -122,6 +122,39 @@ int check_counting_stock(struct AVL_Tree *node, char ID[6]) {
 // int assume_out_of_stock_product(struct AVL_Tree *node) {
 //   return (int)((5 / 100) * (pow((double)2, (double)height(node))));
 // }
+
+int watchDetail(struct AVL_Tree *node , char *productID , char *productFile){
+  struct AVL_Tree *tmp = searchNode(node , productID);
+  int isRemain = 0;
+  char buffer[255];
+  FILE* fp = fopen(productFile , "r");
+  while(fgets(buffer , 254 , fp)){
+    fscanf(buffer, "%6[^,],%6[^,],%100[^,],%d,%7[^,],%7[^,],%50[^,],%d,%d,%d,%d,%d",
+               tmp->ID, tmp->stockID, tmp->productName, &tmp->price, tmp->imports,
+               tmp->exports, tmp->category, &tmp->stock, &tmp->access,
+               &tmp->addToCart, &tmp->buy, &tmp->key);
+               if(strcmp(tmp->ID,productID)==0 && tmp->stock > 0){
+                isRemain = 1;
+                break;
+               }
+  }
+  fclose(fp);
+
+  printf("Product ID : %s\n" , tmp->ID);
+  printf("Product Name : %s | Category : %s\n" , tmp->productName,tmp->category);
+  printf("Status : ");
+  (isRemain)? printf("\'Product Remaining\'") : printf("\'Out Of Stock\'");
+  printf("\n");
+  printf("Price : %d\n" , tmp->price);
+
+  return tmp->key;
+}
+
+int addToCart(struct AVL_Tree *node , char *productID , int key){
+  /*Open file to add*/
+  printf("");
+
+}
 
 /*
 - ต้อง traversal พร้อมเช็คเรื่อยๆ ถ้าใช่ก็ใส่ลงใน arr

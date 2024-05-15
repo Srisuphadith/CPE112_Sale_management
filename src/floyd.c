@@ -56,3 +56,54 @@ void printSolution(int dist[][V])
 //     floydWarshall(graph);
 //     return 0;
 // }
+
+void bubbleSort(int *arr, int n) {
+    for (int i = 0; i < n-1; i++) {
+        for (int j = 0; j < n-i-1; j++) {
+            if (arr[j] > arr[j+1]) {
+                // Swap arr[j] and arr[j+1]
+                int temp = arr[j];
+                arr[j] = arr[j+1];
+                arr[j+1] = temp;
+            }
+        }
+    }
+}
+
+int* suggestionCat(int category, const char *cateFile, char *floyd) {
+    int col[4];
+    FILE* fp = fopen(cateFile, "r");
+    if (fp == NULL) {
+        perror("Failed to open file");
+        return NULL;
+    }
+
+    int *arr = (int *)malloc(4 * sizeof(int));
+    if (arr == NULL) {
+        perror("Failed to allocate memory");
+        fclose(fp);
+        return NULL;
+    }
+
+    char floyd_category_buffer[255];
+    int i = 0;
+    while (fgets(floyd_category_buffer, sizeof(floyd_category_buffer), fp) != NULL && i <= category) {
+        if (sscanf(floyd_category_buffer, "%d,%d,%d,%d", &col[0], &col[1], &col[2], &col[3]) == 4) {
+            // Assuming we are collecting data from the specified category
+            if (i == category) {
+                for (int j = 0; j < 4; j++) {
+                    arr[j] = col[j];
+                }
+                break;
+            }
+        }
+        i++;
+    }
+
+    fclose(fp);
+
+    // Sort the array using bubbleSort
+    bubbleSort(arr, 4);
+
+    return arr;
+}

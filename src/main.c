@@ -1,3 +1,4 @@
+//gcc cd "c:\Users\akani\OneDrive\Documents\VSC\CPE112_Sale_management\src\" ; if ($?) { gcc shop.c -o shop } ; if ($?) { .\shop }main.c
 #include "AVL.c"
 #include "Sell_Product_Func.c"
 #include "shop.c"
@@ -23,7 +24,7 @@ void loadProducts(AVL_Tree **init) {
     FILE *fp = fopen("../csv/product.csv", "r");
     char buffer[255];
     while (fgets(buffer, 255, fp)) {
-        sscanf(buffer, "%6[^,],%6[^,],%100[^,],%d,%7[^,],%7[^,],%50[^,],%d,%d,%d,%d,%d",
+        fscanf(buffer, "%6[^,],%6[^,],%100[^,],%d,%7[^,],%7[^,],%50[^,],%d,%d,%d,%d,%d",
                tmp->ID, tmp->stockID, tmp->productName, &tmp->price, tmp->imports,
                tmp->exports, tmp->category, &tmp->stock, &tmp->access,
                &tmp->addToCart, &tmp->buy, &tmp->key);
@@ -82,7 +83,7 @@ int history(int user_id) {
   AVL_Tree *tmp = (AVL_Tree *)malloc(1000 * sizeof(AVL_Tree));
 
   while (fgets(last_buffer, 255, pd)) {
-    sscanf(last_buffer,
+    fscanf(last_buffer,
            "%6[^,],%6[^,],%100[^,],%d,%7[^,],%7[^,],%50[^,],%d,%d,%d,%d,%d",
            tmp[i].ID, tmp[i].stockID, tmp[i].productName, &tmp[i].price,
            tmp[i].imports, tmp[i].exports, tmp[i].category, &tmp[i].stock,
