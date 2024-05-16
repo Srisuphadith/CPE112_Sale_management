@@ -658,7 +658,7 @@ void main_menu(struct ProductSales *ps)
         case 3:
             break;
         default:
-            printf("Invalid choice. Please try again.");
+            printf("Invalid choice. Please try again.\n");
         }
     } while (option != 3);
 }
@@ -785,10 +785,10 @@ void add_product(struct ProductSales *ps)
     scanf("%d", &newNode->price);
     getchar();
 
-    printf("Enter new imports: ");
+    printf("Enter new imports[DDMMYY]: ");
     scanf("%6s", newNode->imports);
     getchar();
-    printf("Enter new exports: ");
+    printf("Enter new exports[DDMMYY]: ");
     scanf("%6s", newNode->exports);
     getchar();
     printf("Enter new category: ");
@@ -865,8 +865,8 @@ void update_product(struct ProductSales *ps)
 
     // สร้างข้อมูลแถวใหม่ในรูปแบบ CSV
     char newData[MAX_LINE_LENGTH];
-    snprintf(newData, sizeof(newData), "%s,%s,%s,%d,%s,%s,%s,%d\n",
-             newNode->ID, newNode->stockID, newNode->productName, newNode->price, newNode->imports, newNode->exports, newNode->category, newNode->stock);
+    snprintf(newData, sizeof(newData), "%s,%s,%s,%d,%s,%s,%s,%d, %d, %d, %d, %d, %d\n",
+             newNode->ID, newNode->stockID, newNode->productName, newNode->price, newNode->imports, newNode->exports, newNode->category, newNode->stock, newNode->access, newNode->addToCart, newNode->buy, newNode->buy, newNode->key);
 
     FILE *file = fopen(filename, "r");
     if (file == NULL)
@@ -1043,11 +1043,11 @@ void customer_menu(struct ProductSales *ps)
             break;
         case 4:
             search_by_cat(ps);
-        /*case 5:
-            checkout(ps);
-            break;*/
+        // case 5:
+        //     checkout(ps);
+        //     break;
         case 5:
-            return;
+            return;//รอเเก้
         default:
             printf("Invalid choice. Please try again.\n");
         }
@@ -1117,7 +1117,7 @@ void sortingSuggestValue(struct Product **start)
     {
         return;
     }
-    printf("now ssv\n");
+    // printf("now ssv\n");
 
     // Get the length of the linked list
     int n = 0;
@@ -1193,10 +1193,9 @@ void product_detail(struct ProductSales *ps)
 {
     struct Product* head = ps->products;
     
-    
-    
     char productId[6], stockId[6];
     printf("\n\nEnter ProductID and StockID of product you want to view detail (if exit -1)\n");
+    printf("Enter ProductID\n");
     printf("ProductID : ");
     scanf("%s", productId);
     remove_newline(productId);
@@ -1204,12 +1203,13 @@ void product_detail(struct ProductSales *ps)
     {
         return;
     }
-    struct Product *product = searchProductByIDamdStockID(ps->products, productId, "");
-    if (product == NULL)
-    {
-        printf("ProductID not found.\n");
-        return;
-    }
+    // struct Product *product = searchProductByIDamdStockID(ps->products, productId, "");
+    // if (product == NULL)
+    // {
+    //     printf("ProductID not found.\n");
+    //     return;
+    // }
+    printf("Enter StockID\n");
     printf("StockID : ");
     scanf("%s", stockId);
     remove_newline(stockId);
@@ -1217,7 +1217,7 @@ void product_detail(struct ProductSales *ps)
     {
         return;
     }
-    product = searchProductByIDamdStockID(ps->products, productId, stockId);
+    struct Product *product = searchProductByIDamdStockID(ps->products, productId, stockId);
     if (product == NULL)
     {
         printf("StockID not found.\n");
@@ -1228,6 +1228,7 @@ void product_detail(struct ProductSales *ps)
     int option;
     int amount;
     
+    tmp->access = tmp->access + 1;
     FILE *fp = fopen("csv/product.csv", "w");
     while (head != NULL)
     {
@@ -1244,6 +1245,7 @@ void product_detail(struct ProductSales *ps)
     {
         if ((key1 == key) && tmp->stock > 0)
         {
+            printf("%d\n", tmp->stock);
             isRemain = 1;
             break;
         }
@@ -1345,6 +1347,7 @@ void view_cart(struct ProductSales *ps)
                 pdd = pdd->next;
             }
             printf("Quantity : %d \n", node->Quantity);
+            // printf("Price : %d*%d = %d \n", node->Quantity, node-> )
             printf("---------------------------------------------\n");
         }
     }
@@ -1617,6 +1620,33 @@ int **readAllData(const char *cateFile, int *numRows, int *numCols)
     }
 
     fclose(fp);
+    int min = 99999;
+    int max = 0;
+for(int m = 0; m < i; m++) {
+    for(int n = 0; n < i; n++) {
+        if(arr[m][n] < min && arr[m][n]) {
+            min = arr[m][n]; // Update min if a smaller value is found
+        }
+        if(arr[m][n] > max) {
+            max = arr[m][n]; // Update max if a larger value is found
+        }
+    }
+}
+    // printf("-%d %d-\n" , min ,max);
+for(int m = 0; m < i; m++) {
+    for(int n = 0; n < i; n++) {
+        if(max != min) {
+            arr[m][n] = 100 - (((arr[m][n] - min) / (double)(max - min)) * 100.0);
+        } else {
+            // Handle division by zero
+            arr[m][n] = 0;
+        }
+        printf("%d ", arr[m][n]);
+    }
+    printf("\n");
+}
+
+
     return arr;
 }
 
@@ -1659,7 +1689,7 @@ int *printSortedRow(int **arr, int numRows, int numCols, int chosenRowIndex)
     {
         for (int j = 0; j <= numCols - 2 - i; j++)
         {
-            if (sortSuggest[j].floydValue < sortSuggest[j + 1].floydValue)
+            if (sortSuggest[j].floydValue > sortSuggest[j + 1].floydValue)
             {
                 floyd temp = sortSuggest[j];
                 sortSuggest[j] = sortSuggest[j + 1];
