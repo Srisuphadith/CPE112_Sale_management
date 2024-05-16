@@ -1067,7 +1067,8 @@ void search_by_cat(struct ProductSales *ps)
     while (fscanf(fp, "%d,%s", &id[i], cat[i]) != EOF)
     {
         remove_newline(cat[i]);
-        printf("%d. %s\n", id[i], cat[i]);
+        printf("%d. %s\n",id[i], cat[i]);
+        i++;
     }
     fclose(fp);
     printf("enter category: ");
@@ -1077,7 +1078,7 @@ void search_by_cat(struct ProductSales *ps)
     struct Product *tmp = ps->products;
     while (tmp->next != NULL)
     {
-        if (strcmp(tmp->category, cat[i]) == 0)
+        if (strcmp(tmp->category, cat[userCate]) == 0)
         {
             printf("ID: %s | ", tmp->ID);
             printf("Stock ID: %s | ", tmp->stockID);
@@ -1088,7 +1089,8 @@ void search_by_cat(struct ProductSales *ps)
     }
 
     //------- floyd Suggestion ---------
-    int *suggestArr = dealWithFloyd(i);
+    int *suggestArr = dealWithFloyd(userCate-1);
+    // printf("%d %d %d" , suggestArr[0] , suggestArr[1] , suggestArr[2]);
     int z = 0;
     tmp = ps->products;
     printf("Or Similar Category : \'%s\'\n", cat[suggestArr[0]]);
@@ -1632,22 +1634,17 @@ for(int m = 0; m < i; m++) {
             min = arr[m][n]; // Update min if a smaller value is found
         }
         if(arr[m][n] > max) {
-            max = arr[m][n]; // Update max if a larger value is found
+            max = arr[m][n]+1; // Update max if a larger value is found
         }
     }
 }
     // printf("-%d %d-\n" , min ,max);
 for(int m = 0; m < i; m++) {
     for(int n = 0; n < i; n++) {
-        if(max != min) {
-            arr[m][n] = 100 - (((arr[m][n] - min) / (double)(max - min)) * 100.0);
-        } else {
-            // Handle division by zero
-            arr[m][n] = 0;
-        }
-        printf("%d ", arr[m][n]);
+        arr[m][n] = 100 - (((arr[m][n] - min) / (double)(max - min)) * 100.0);
+        // printf("%d ", arr[m][n]);
     }
-    printf("\n");
+    // printf("\n");
 }
 
 
@@ -1689,18 +1686,16 @@ int *printSortedRow(int **arr, int numRows, int numCols, int chosenRowIndex)
         sortSuggest[k].position = j + 1;
     }
 
-    for (int i = 0; i <= numCols - 2; i++)
-    {
-        for (int j = 0; j <= numCols - 2 - i; j++)
-        {
-            if (sortSuggest[j].floydValue > sortSuggest[j + 1].floydValue)
-            {
-                floyd temp = sortSuggest[j];
-                sortSuggest[j] = sortSuggest[j + 1];
-                sortSuggest[j + 1] = temp;
-            }
+for (int i = 0; i < numCols - 1; i++) {
+    for (int j = 0; j < numCols - 1 - i; j++) {
+        if (sortSuggest[j].floydValue > sortSuggest[j + 1].floydValue) {
+            floyd temp = sortSuggest[j];
+            sortSuggest[j] = sortSuggest[j + 1];
+            sortSuggest[j + 1] = temp;
         }
     }
+}
+
 
     for (int i = 0; i <= numCols - 1; i++)
     {
