@@ -428,30 +428,30 @@ void load_data(struct ProductSales *ps)
 //     fprintf(file, "%s,%s,%s,%s\n", timestamp, user, action, details);
 //     fclose(file);
 // }
-void view_cart(struct ProductSales *ps)
-{
-    int user_id = ps->current_user->UserID;
-    struct Product *head = ps->products;
-    struct PurchaseHistory *node = (struct PurchaseHistory*)malloc(sizeof(struct PurchaseHistory));
-    FILE *file = fopen("csv/addToCart.csv", "r");
+// void view_cart(struct ProductSales *ps)
+// {
+//     int user_id = ps->current_user->UserID;
+//     struct Product *head = ps->products;
+//     struct PurchaseHistory *node = (struct PurchaseHistory*)malloc(sizeof(struct PurchaseHistory));
+//     FILE *file = fopen("csv/addToCart.csv", "r");
 
-    while(fscanf(file,"%d,%[^,],%d",&node->UserID,node->StockID,&node->Quantity) != EOF){
-        if(node->UserID == user_id){
-        printf("User Id : %d \n",user_id);
-        struct Product *pdd = ps->products;
-        while (pdd->next != NULL)
-        {
-           if(atoi(pdd->ID)+atoi(pdd->stockID) == atoi(node->StockID)){
-            printf("Product name : %s \n", pdd->productName);
-            break;
-           }
-           pdd = pdd->next;
-        }
-        printf("Quantity : %d \n", node->Quantity);
-        printf("---------------------------------------------\n");
-        }
-    }
-}
+//     while(fscanf(file,"%d,%[^,],%d",&node->UserID,node->StockID,&node->Quantity) != EOF){
+//         if(node->UserID == user_id){
+//         printf("User Id : %d \n",user_id);
+//         struct Product *pdd = ps->products;
+//         while (pdd->next != NULL)
+//         {
+//            if(atoi(pdd->ID)+atoi(pdd->stockID) == atoi(node->StockID)){
+//             printf("Product name : %s \n", pdd->productName);
+//             break;
+//            }
+//            pdd = pdd->next;
+//         }
+//         printf("Quantity : %d \n", node->Quantity);
+//         printf("---------------------------------------------\n");
+//         }
+//     }
+// }
 // void add_to_cart(struct ProductSales *ps)
 // {
 //     char stock_id[50];
@@ -483,12 +483,40 @@ void view_cart(struct ProductSales *ps)
 //     }
     
 // }
+void register_user(struct ProductSales *ps) {
+    char username[100], password[100];
+        printf("Enter new username: ");
+        scanf("%s", username);
+        //remove_newline(username);
+        
+    printf("Enter password: ");
+    scanf("%s", password);
+    //remove_newline(password);
+    int ud;
+    //struct User *user = createNode_User(username, password, "user", ps->users->UserID);
+    //insertNodeUser(&(ps->users), user); // Insert the user node into the user list
+    struct User *head = ps->users;
+    while (head->next != NULL)
+    {
+        head = head->next;
+        
+    }
+    FILE *fp = fopen("csv/login.csv", "a");
+    if(fp!=NULL){
+        printf("%d",head->UserID);
+        fprintf(fp, "%d,%s,%s,%s\n", head->UserID+1, username, password,"user");
+    }else{
+        printf("regist failed");
+    }
+    fclose(fp);
+}
 int main()
 {
     struct ProductSales app;
     app.current_user->UserID = 2;
      load_data(&app);
-    view_cart(&app);
+    //view_cart(&app);
+    register_user(&app);
     //log_activity(&app,"hello","555");
     //add_to_cart(&app);
     // struct Product *head = app.products;

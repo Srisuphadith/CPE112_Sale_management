@@ -38,7 +38,8 @@ struct CartItem* searchCartItemByKey(struct CartItem *head, int key);
 void log_activity(struct ProductSales *ps, char *action, char *details);
 void remove_newline(char *str);
 void login(struct ProductSales *ps);
-void register_user(struct ProductSales *ps , char *userLoginFile);
+void register_user_NEW(struct ProductSales *ps);
+void register_user(struct ProductSales *ps);
 void main_menu(struct ProductSales *ps);
 void admin_menu(struct ProductSales *ps);
 void manage_products(struct ProductSales *ps);
@@ -68,7 +69,7 @@ void clear_terminal()
     system("clear");
 #endif
 }
-// load_data ดีเเล้ว------------------------------------------------------------------------------------------------------------------------------------------------
+//load_data ดีเเล้ว------------------------------------------------------------------------------------------------------------------------------------------------
 void load_data(struct ProductSales *ps)
 {
     // Load data from CSV files here
@@ -170,7 +171,6 @@ void load_data(struct ProductSales *ps)
     fclose(fp2);
     fclose(fp3);
 }
-
 
 struct Product *createNode_StrProduct(char ID[], char stockID[], char productName[], int price,
                                       char imports[], char exports[], char category[],
@@ -463,47 +463,69 @@ void login(struct ProductSales *ps) {
     return;
 }
 
-void register_user(struct ProductSales *ps , char *userLoginFile) {
+void register_user_NEW(struct ProductSales *ps)
+{
     char username[100], password[100];
-    // while (1) {
-        printf("Enter new username: ");
-        printf("Username: ");
-        scanf("%s", username);
-        remove_newline(username);
-
-        while (1)
-        {
-            if (searchUserByUsername(ps->users, username) == NULL)
-            {
-
-                break;
-            }
-            else
-            {
-                printf("Username already exists. Please choose another username.\n");
-                // continue;
+    int maxUserID = 0;
+    int userID;
+       FILE *fp = fopen("csv/login.csv", "r");
+    if (fp != NULL) {
+        while (fscanf(fp, "%d,%99[^,],%99[^,],%9s", &userID, username, password, (char[10]){}) != EOF) {
+            if (userID > maxUserID) {
+                maxUserID = userID;
             }
         }
-        
-        
-        
-    // }
-    // printf("\n");
+        fclose(fp);
+    }
+    printf("Enter new username: ");
+    scanf("%99s", username);
+    remove_newline(username);
 
     printf("Enter password: ");
-    printf("Password: ");
-    scanf("%s", password);
+    scanf("%99s", password);
     remove_newline(password);
+    userID = maxUserID + 1;
 
-    struct User *user = createNode_User(username, password, "user", ps->users->UserID);
+    struct User *user = createNode_User(username, password, "user", userID);
     insertNodeUser(&(ps->users), user); // Insert the user node into the user list
 
-    FILE *fp = fopen(userLoginFile, "a");
-    if (fp == NULL) {
-        fprintf(stderr, "Error opening file. Please check the file path and try again.\n");
-        exit(EXIT_FAILURE);
+    // Open file in append mode to add the new user
+    fp = fopen("csv/login.csv", "a");
+    if (fp != NULL) {
+        fprintf(fp, "%d,%s,%s,%s\n", userID, username, password, "user");
+        fclose(fp);
+        printf("Registration successful. UserID: %d\n", userID);
+    } else {
+        printf("Registration failed\n");
     }
-    fprintf(fp, "Username: %s\nPassword: %s\n", username, password);
+}
+
+void register_user(struct ProductSales *ps) {
+    char username[100], password[100];
+        printf("Enter new username: ");
+        scanf("%s", username);
+        remove_newline(username);
+        
+    printf("Enter password: ");
+    scanf("%s", password);
+    remove_newline(password);
+    int ud;
+    struct User *user = createNode_User(username, password, "user", ps->users->UserID);
+    insertNodeUser(&(ps->users), user); // Insert the user node into the user list
+    struct User *head = ps->users;
+    // while (head->next != NULL)
+    // {
+    //     ud = head->UserID;
+    //     head = head->next;
+        
+    // }
+    FILE *fp = fopen("csv/login.csv", "a");
+    if(fp!=NULL){
+        printf("%d",ud+1);
+        //fprintf(fp, "%d,%s,%s,%s\n", head->UserID+1, username, password,"user");
+    }else{
+        printf("regist failed");
+    }
     fclose(fp);
 }
 
@@ -524,7 +546,7 @@ void main_menu(struct ProductSales *ps)
         run(ps);
         break;
     case 2:
-        register_user(ps,"login.csv");
+        register_user_NEW(ps);
         break;
     case 3:
         break;
@@ -840,33 +862,58 @@ void delete_product(struct ProductSales *ps)
     }
 }
 
-int findAllStoreuserID(struct History *hs,int *arr){
+int findAllStoreUserID(struct History *hs, int *arr, int arr_size) {
     int index = 0;
     int isSet = 0;
-    while(hs != NULL){
-        if(arr[index] == hs->user_id){
-            isSet = 1;
-            break;
+
+    while (hs != NULL) {
+        // Check if the user ID is already in the array
+        for (int i = 0; i < index; i++) {
+            if (arr[i] == hs->user_id) {
+                isSet = 1;
+                break;
+            }
         }
-        index++;
-        hs->next;
+
+        // If not found, add it to the array
+        if (!isSet && index < arr_size) {
+            arr[index] = hs->user_id;
+            index++;
+        }
+
+        // Reset the flag for the next iteration
+        isSet = 0;
+
+        hs = hs->next;
     }
-    return (isSet == 0)? isSet : index;
+
+    return index;  // Return the number of unique user IDs stored in arr
 }
 
-void view_orders(struct ProductSales *ps)
-{
-    // View orders logic here
+
+void view_orders(struct ProductSales *ps) {
     struct History *user_his = ps->user_history;
-    struct History *tmp = user_his;
     int user[50];
-    char id[50][6];
-    int i =0;
-    do{
-        findAllStoreuserID(tmp , user);
-        tmp->next;
-    }while(tmp != NULL);
+    int uniqueUserCount;
+
+    // Find all unique user IDs
+    // uniqueUser = findAllStoreUserID(user_his, user, 50);
+
+    // Process each unique user ID
+    for (int i = 0; i < uniqueUserCount; i++) {
+        printf("User ID: %d\n", user[i]);
+
+        struct History *tmp = user_his;
+        while (tmp != NULL) {
+            // if (tmp->user_id == user[i]) {
+            //     printf("Order ID: %s, Product ID: %s, Quantity: %d\n", 
+            //            tmp->order_id, tmp->product_id, tmp->quantity);
+            // }
+            tmp = tmp->next;
+        }
+    }
 }
+
 
 // void generate_report(struct ProductSales *ps)
 // {
@@ -1017,7 +1064,14 @@ void product_detail(struct ProductSales *ps , char *stockId){
     printf("Product ID : %s\n" , tmp->stockID);
     printf("Product Name : %s | Category : %s\n" , tmp->productName,tmp->category);
     printf("Status : ");
-    (isRemain)? printf("\'Product Remaining\'") : printf("\'Out Of Stock\'");
+
+    if(isRemain==1){
+        printf("\'Product Remaining\'");
+        
+    }
+    else if(isRemain==0){
+        printf("\'Out Of Stock\'");
+    }
     printf("\n");
     printf("Price : %d\n" , tmp->price);
 }
@@ -1289,6 +1343,10 @@ void floydWarshall(int dist[][V]) {
         printf("\n");
     }
 }
+
+
+
+
 
 
 
