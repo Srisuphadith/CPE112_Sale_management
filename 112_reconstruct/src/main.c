@@ -500,35 +500,6 @@ void register_user_NEW(struct ProductSales *ps)
     }
 }
 
-void register_user(struct ProductSales *ps) {
-    char username[100], password[100];
-        printf("Enter new username: ");
-        scanf("%s", username);
-        remove_newline(username);
-        
-    printf("Enter password: ");
-    scanf("%s", password);
-    remove_newline(password);
-    int ud;
-    struct User *user = createNode_User(username, password, "user", ps->users->UserID);
-    insertNodeUser(&(ps->users), user); // Insert the user node into the user list
-    struct User *head = ps->users;
-    // while (head->next != NULL)
-    // {
-    //     ud = head->UserID;
-    //     head = head->next;
-        
-    // }
-    FILE *fp = fopen("csv/login.csv", "a");
-    if(fp!=NULL){
-        printf("%d",ud+1);
-        //fprintf(fp, "%d,%s,%s,%s\n", head->UserID+1, username, password,"user");
-    }else{
-        printf("regist failed");
-    }
-    fclose(fp);
-}
-
 
 void main_menu(struct ProductSales *ps)
 {
@@ -890,7 +861,10 @@ int findAllStoreUserID(struct History *hs, int *arr, int arr_size) {
     return index;  // Return the number of unique user IDs stored in arr
 }
 
+/*
+return 
 
+*/
 void view_orders(struct ProductSales *ps) {
     struct History *user_his = ps->user_history;
     int user[50];
