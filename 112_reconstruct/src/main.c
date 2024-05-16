@@ -38,6 +38,7 @@ struct PurchaseHistory *searchPurchaseHistoryByUserID(struct PurchaseHistory *he
 struct PurchaseHistory *searchPurchaseHistoryByStockID(struct PurchaseHistory *head, char StockID[]);
 struct CartItem *searchCartItemByKey(struct CartItem *head, int key);
 struct Product *searchProductByIDamdStockID(struct Product *head, char *ID, char *StockID);
+struct Product *searchProductByID(struct Product *head, char *ID) ;
 void log_activity(struct ProductSales *ps, char *action, char *details);
 void remove_newline(char *str);
 void login(struct ProductSales *ps);
@@ -93,7 +94,7 @@ void load_data(struct ProductSales *ps)
         if (!fp3)
             printf("Failed to open csv/login.csv\n");
         if (fp1)
-            fclose(fp1);
+            fclose(fp1);     
         if (fp2)
             fclose(fp2);
         if (fp3)
@@ -686,7 +687,7 @@ void admin_menu(struct ProductSales *ps)
             view_orders(ps);
             break;
         default:
-            printf("Invalid choice. Please try again.");
+            printf("Invalid choice. Please try again.\n");
         }
     } while (option != -1);
 
@@ -1005,13 +1006,25 @@ void view_orders(struct ProductSales *ps)
 {
     int i = 0;
     struct History *node = ps->user_history;
-    printf(" No | User ID |Date(DDMMYY)| Product Name ");
-    printf("------------------------------------------");
+
+    // Print table header
+    printf(" No | User ID | Date(DDMMYY) \n");
+    printf("----------------------------\n");
+
     while (node != NULL)
     {
-        struct Product *prod = ps->products;
-        struct Product *find = searchProductByID(prod, ps->user_history->pro_id);
-        printf("%4d|%9d|%12s|%14s", node->id, node->user_id, node->date, node->pro_id);
+        printf("%4d | %7d | %10s\n", i++, node->user_id, node->date);
+        // struct Product *find = searchProductByID(ps->products, node->pro_id);
+
+        // if (find != NULL)
+        // {
+        //     printf("%4d | %7d | %10s | %s\n", i++, node->user_id, node->date, find->productName);
+        // }
+        // else
+        // {
+        //     printf("%4d | %7d | %10s | Product not found\n", i++, node->user_id, node->date);
+        // }
+
         node = node->next;
     }
 }
