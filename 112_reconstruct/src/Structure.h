@@ -63,6 +63,7 @@ struct CartItem
 {
     int key; //Key
     int quantity;
+    char IDstock[20]; 
     struct CartItem *next;
 };
 

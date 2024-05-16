@@ -466,22 +466,28 @@ void register_user(struct ProductSales *ps , char *userLoginFile) {
     char username[100], password[100];
     while (1) {
         printf("Enter new username: ");
-        if (fgets(username, sizeof(username), stdin) == NULL) {
+        if (fgets(username, sizeof(username), stdin) == NULL)
+        {
             fprintf(stderr, "Error reading input. Please try again.\n");
             continue;
         }
-        remove_newline(username);
+        // remove_newline(username);
         if (searchUserByUsername(ps->users, username) == NULL) {
+
             break;
         } else {
             printf("Username already exists. Please choose another username.\n");
+            // continue;
         }
+        
     }
+    // printf("\n");
 
     printf("Enter password: ");
-    if (fgets(password, sizeof(password), stdin) == NULL) {
+    if (fgets(password, sizeof(password), stdin) == NULL)
+    {
         fprintf(stderr, "Error reading input. Please try again.\n");
-        //continue;
+        return; // หยุดการทำงานหากเกิดข้อผิดพลาดในการอ่านข้อมูล
     }
     remove_newline(password);
 
@@ -590,7 +596,6 @@ void manage_products(struct ProductSales *ps)
         }
     }
 }
-//อันนี้เอาไว้ทำอะไรนะะะ?
 
 void view_products(struct ProductSales *ps, char outputFileName[20])
 {
@@ -1052,74 +1057,143 @@ void view_cart(struct ProductSales *ps)
         }
     }
 }
-//ต้องทำ*********************************
+//ยังไม่ได้เทส อัพเดตล่าสุด 16/05/67 02:53
 void checkout(struct ProductSales *ps)
 {
-    // if (ps->cart_count == 0)
-    //     {
-    //         printf("Your cart is empty.\n");
-    //     }
-    //     else
-    //     {
-    //         printf("\nCheckout:\n");
-    //         for (int i = 0; i < ps->cart_count; i++)
-    //         {
-    //             struct CartItem *item = &ps->cart[i];
-    //             item->product.inventories -= item->quantity;
-    //             item->product.num_purchases += item->quantity;
+    if (ps == NULL)
+    {
+        printf("ProductSales pointer is NULL.\n");
+        return;
+    }
 
-    //             struct PurchaseHistory ph;
-    //             ph.user_id = ps->current_user.user_id;
-    //             ph.stock_id = item->product.stock_id;
-    //             ph.quantity = item->quantity;
-    //             ps->purchase_history[ps->purchase_history_count++] = ph;
-
-    //             char details[100];
-    //             snprintf(details, sizeof(details), "Customer purchased %d of %s with StockID %s",
-    //                      item->quantity,
-    //                      item->product.product_name,
-    //                      item->product.stock_id);
-    //             log_activity(ps, "Purchase", details);
-
-    //             printf("Purchased %d of %s\n", item->quantity, item->product.product_name);
-    //         }
-    //         ps->cart_count = 0;
-    //         save_data(ps);
-    //         printf("Checkout complete!\n");
-    //     }
-    
     if (ps->cart_count == 0)
     {
         printf("Your cart is empty.\n");
+        return;
     }
-    else
+
+    printf("\nCheckout:\n");
+
+    struct CartItem *currentCartItem = ps->cart;
+    while (currentCartItem != NULL)
     {
-        printf("\nCheckout:\n");
-        for (int i = 0; i < ps->cart_count; i++)
+        struct Product *currentProduct = ps->products;
+        while (currentProduct != NULL && strcmp(currentProduct->stockID, currentCartItem->IDstock) != 0)
         {
-            ps->cart[i].product.inventories -= ps->cart[i].quantity;
-            ps->cart[i].product.num_purchases += ps->cart[i].quantity;
-
-            struct PurchaseHistory ph;
-            ph.user_id = ps->current_user.user_id;
-            ph.stock_id = ps->cart[i].product.stock_id;
-            ph.quantity = ps->cart[i].quantity;
-            ps->purchase_history[ps->purchase_history_count++] = ph;
-
-            char details[100];
-            sprintf(details, "Customer purchased %d of %s with StockID %s",
-                    ps->cart[i].quantity,
-                    ps->cart[i].product.product_name,
-                    ps->cart[i].product.stock_id);
-            log_activity(ps, "Purchase", details);
-
-            printf("Purchased %d of %s\n", ps->cart[i].quantity, ps->cart[i].product.product_name);
+            currentProduct = currentProduct->next;
         }
-        ps->cart_count = 0;
-        save_data(ps);
-        printf("Checkout complete!\n");
+
+        if (currentProduct == NULL)
+        {
+            printf("Product with StockID %s not found.\n", currentCartItem->IDstock);
+            currentCartItem = currentCartItem->next;
+            continue;
+        }
+
+        // Update inventory and num_purchases
+        currentProduct->stock -= currentCartItem->quantity;
+        currentProduct->buy += currentCartItem->quantity;
+
+        // Record purchase history
+        struct PurchaseHistory *ph = malloc(sizeof(struct PurchaseHistory));
+        if (ph == NULL)
+        {
+            fprintf(stderr, "Memory allocation error.\n");
+            exit(EXIT_FAILURE);
+        }
+        ph->UserID = ps->current_user->UserID;
+        strcpy(ph->StockID, currentProduct->stockID);
+        ph->Quantity = currentCartItem->quantity;
+        ph->next = ps->purchase_history;
+        ps->purchase_history = ph;
+        ps->purchase_history_count++;
+
+        // Log activity
+        char details[100];
+        snprintf(details, sizeof(details), "Customer purchased %d of %s with StockID %s",
+                 currentCartItem->quantity, currentProduct->productName, currentProduct->stockID);
+        log_activity(ps, "Purchase", details);
+
+        printf("Purchased %d of %s\n", currentCartItem->quantity, currentProduct->productName);
+
+        struct CartItem *temp = currentCartItem;
+        currentCartItem = currentCartItem->next;
+        free(temp); // Free memory allocated for the current cart item
     }
+
+    // Reset cart and save data
+    ps->cart_count = 0;
+    // save_data(ps);
+    printf("Checkout complete!\n");
 }
+
+// }
+// {
+//     if (ps->cart_count == 0)
+//         {
+//             printf("Your cart is empty.\n");
+//         }
+//         else
+//         {
+//     //         printf("\nCheckout:\n");
+//     //         for (int i = 0; i < ps->cart_count; i++)
+//     //         {
+//     //             struct CartItem *item = &ps->cart[i];
+//     //             item->product.inventories -= item->quantity;
+//     //             item->product.num_purchases += item->quantity;
+
+//     //             struct PurchaseHistory ph;
+//     //             ph.user_id = ps->current_user.user_id;
+//     //             ph.stock_id = item->product.stock_id;
+//     //             ph.quantity = item->quantity;
+//     //             ps->purchase_history[ps->purchase_history_count++] = ph;
+
+//     //             char details[100];
+//     //             snprintf(details, sizeof(details), "Customer purchased %d of %s with StockID %s",
+//     //                      item->quantity,
+//     //                      item->product.product_name,
+//     //                      item->product.stock_id);
+//     //             log_activity(ps, "Purchase", details);
+
+//     //             printf("Purchased %d of %s\n", item->quantity, item->product.product_name);
+//     //         }
+//     //         ps->cart_count = 0;
+//     //         save_data(ps);
+//     //         printf("Checkout complete!\n");
+//     //     }
+    
+//     if (ps->cart_count == 0)
+//     {
+//         printf("Your cart is empty.\n");
+//     }
+//     else
+//     {
+//         printf("\nCheckout:\n");
+//         for (int i = 0; i < ps->cart_count; i++)
+//         {
+//             ps->cart[i].product.inventories -= ps->cart[i].quantity;
+//             ps->cart[i].product.num_purchases += ps->cart[i].quantity;
+
+//             struct PurchaseHistory ph;
+//             ph.user_id = ps->current_user.user_id;
+//             ph.stock_id = ps->cart[i].product.stock_id;
+//             ph.quantity = ps->cart[i].quantity;
+//             ps->purchase_history[ps->purchase_history_count++] = ph;
+
+//             char details[100];
+//             sprintf(details, "Customer purchased %d of %s with StockID %s",
+//                     ps->cart[i].quantity,
+//                     ps->cart[i].product.product_name,
+//                     ps->cart[i].product.stock_id);
+//             log_activity(ps, "Purchase", details);
+
+//             printf("Purchased %d of %s\n", ps->cart[i].quantity, ps->cart[i].product.product_name);
+//         }
+//         ps->cart_count = 0;
+//         save_data(ps);
+//         printf("Checkout complete!\n");
+//     }
+// }
 //view_all_products ดีเเล้ว------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -1136,7 +1210,7 @@ void view_all_products(struct ProductSales *ps){
 void run(struct ProductSales *ps)
 {
     int i;
-    // load_data(ps);
+    load_data(ps);
     while (1){
         login(ps);
         if (ps->current_user != NULL){
@@ -1144,11 +1218,11 @@ void run(struct ProductSales *ps)
                 admin_menu(ps);
             }
             else if (strcmp(ps->current_user->Role, "Customer") == 0){
-                // customer_menu(ps);
+                customer_menu(ps);
             }
         }
         else{
-            printf("Type 1 to try again, type -1 to exit.  ");
+            printf("Type 1 to try again, type -1 to exit. : ");
             scanf("%d",&i);
             if(i == -1){
                 return;
