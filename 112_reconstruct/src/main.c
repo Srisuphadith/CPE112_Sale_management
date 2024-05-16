@@ -847,7 +847,7 @@ void view_orders(struct ProductSales *ps)
         else if(user[i] == user_his->user_id){
 
         }
-    }
+    }while(1);
 }
 
 // void generate_report(struct ProductSales *ps)
