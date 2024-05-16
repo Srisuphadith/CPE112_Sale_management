@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#define V 4
+#define INF 99999 
 #include "Structure.h"
-#define FILENAME "csv/product.csv"
 
 /**
  * @file main.c
@@ -12,32 +13,30 @@
  * This file defines the maximum limits for products, users, history, cart items, and line length.
  * These limits are used throughout the program to ensure that arrays and buffers are not exceeded.
  */
-#define MAX_PRODUCTS 100     /**< The maximum number of products */
-#define MAX_USERS 100        /**< The maximum number of users */
-#define MAX_HISTORY 100      /**< The maximum number of history entries */
-#define MAX_CART_ITEMS 100   /**< The maximum number of items in a cart */
-#define MAX_LINE_LENGTH 1024 /**< The maximum length of a line */
+#define MAX_PRODUCTS 100         /**< The maximum number of products */
+#define MAX_USERS 100            /**< The maximum number of users */
+#define MAX_HISTORY 100          /**< The maximum number of history entries */
+#define MAX_CART_ITEMS 100       /**< The maximum number of items in a cart */
+#define MAX_LINE_LENGTH 1024     /**< The maximum length of a line */
 #define BUFFER_SIZE 255
 
-// Function prototypes
+//Function prototypes
 void clear_terminal();
-int *dealWithFloyd(int productChose);
 void load_data(struct ProductSales *ps);
-struct Product *createNode_StrProduct(char ID[], char stockID[], char productName[], int price, char imports[], char exports[], char category[], int stock, int access, int addToCart, int buy, int key);
-struct User *createNode_User(char Username[], char Password[], char Role[], int UserID);
-struct History *createNode_History(int id, int user_id, char date[7], char pro_id[6]);
-struct PurchaseHistory *createNode_PurchaseHistory(int UserID, char StockID[], int Quantity);
-struct CartItem *createNode_CartItem(int key, int quantity);
+struct Product *createNode_StrProduct(char ID[], char stockID[], char productName[], int price,char imports[], char exports[], char category[],int stock, int access, int addToCart, int buy, int key);
+struct User* createNode_User(char Username[], char Password[], char Role[], int UserID);
+struct History* createNode_History(int id,int user_id,char date[7],char pro_id[6]);
+struct PurchaseHistory* createNode_PurchaseHistory(int UserID, char StockID[], int Quantity);
+struct CartItem* createNode_CartItem(int key, int quantity);
 void insertNode(struct Product **head, struct Product *newNode);
-struct User *searchUserByUsername(struct User *head, char Username[]);
-struct User *searchUserByID(struct User *head, int UserID);
+struct User* searchUserByUsername(struct User *head, char Username[]);
+struct User* searchUserByID(struct User *head, int UserID);
 struct User *searchUserByUsernameAndPassword(struct User *head, char *username, char *password);
-struct History *searchHistoryById(struct History *head, int id);
-struct History *searchHistoryByuser_id(struct History *head, int user_id);
-struct PurchaseHistory *searchPurchaseHistoryByUserID(struct PurchaseHistory *head, int UserID);
-struct PurchaseHistory *searchPurchaseHistoryByStockID(struct PurchaseHistory *head, char StockID[]);
-struct CartItem *searchCartItemByKey(struct CartItem *head, int key);
-struct Product *searchProductByIDamdStockID(struct Product *head, char *ID, char *StockID);
+struct History* searchHistoryById(struct History *head, int id);
+struct History* searchHistoryByuser_id(struct History *head, int user_id);
+struct PurchaseHistory* searchPurchaseHistoryByUserID(struct PurchaseHistory *head, int UserID);
+struct PurchaseHistory* searchPurchaseHistoryByStockID(struct PurchaseHistory *head, char StockID[]);
+struct CartItem* searchCartItemByKey(struct CartItem *head, int key);
 void log_activity(struct ProductSales *ps, char *action, char *details);
 void remove_newline(char *str);
 void login(struct ProductSales *ps);
@@ -46,7 +45,7 @@ void register_user(struct ProductSales *ps);
 void main_menu(struct ProductSales *ps);
 void admin_menu(struct ProductSales *ps);
 void manage_products(struct ProductSales *ps);
-void view_products(struct ProductSales *ps);
+void view_products(struct ProductSales *ps, char outputFileName[]);
 void add_product(struct ProductSales *ps);
 void update_product(struct ProductSales *ps);
 void delete_product(struct ProductSales *ps);
@@ -56,15 +55,14 @@ void customer_menu(struct ProductSales *ps);
 void swap(struct Product **a, struct Product **b);
 void printNode(struct Product **start);
 void view_recommended_products(struct ProductSales *ps);
-void product_detail(struct ProductSales *ps);
-void add_to_cart(struct ProductSales *ps, char ID[6], char StockID[6], int amount);
-// void add_to_cart_to(struct ProductSales *ps);
+void product_detail(struct ProductSales *ps , char *stockId);
+void add_to_cart(struct ProductSales *ps);
+void add_to_cart_to(struct ProductSales *ps);
 void view_cart(struct ProductSales *ps);
 void checkout(struct ProductSales *ps);
 void view_all_products(struct ProductSales *ps);
 void run(struct ProductSales *ps);
-void search_by_cat(struct ProductSales *ps);
-void buy(struct ProductSales *ps, char ID[6], char StockID[6], int amount);
+
 void clear_terminal()
 {
 #if defined(_WIN32) || defined(_WIN64)
@@ -73,18 +71,16 @@ void clear_terminal()
     system("clear");
 #endif
 }
-
-// load_data ดีเเล้ว------------------------------------------------------------------------------------------------------------------------------------------------
+//load_data ดีเเล้ว------------------------------------------------------------------------------------------------------------------------------------------------
 void load_data(struct ProductSales *ps)
 {
     // Load data from CSV files here
-    FILE *fp1 = fopen("csv/product.csv", "r");
-    FILE *fp2 = fopen("csv/userHistory.csv", "r");
-    FILE *fp3 = fopen("csv/login.csv", "r");
-
+    FILE *fp1 = fopen("../csv/product.csv", "r");
+    FILE *fp2 = fopen("../csv/userHistory.csv", "r");
+    FILE *fp3 = fopen("../csv/login.csv", "r");
+    
     // Check if the files were opened successfully
-    if (!fp1 || !fp2 || !fp3)
-    {
+    if (!fp1 || !fp2 || !fp3) {
         printf("Failed to open one or more files.\n");
         if (!fp1)
             printf("Failed to open csv/product.csv\n");
@@ -108,8 +104,7 @@ void load_data(struct ProductSales *ps)
     while (fgets(buffer, BUFFER_SIZE, fp1))
     {
         struct Product *newNode = (struct Product *)malloc(sizeof(struct Product));
-        if (!newNode)
-        {
+        if (!newNode) {
             printf("Memory allocation failed.\n");
             return;
         }
@@ -139,8 +134,7 @@ void load_data(struct ProductSales *ps)
     while (fgets(buffer, BUFFER_SIZE, fp2))
     {
         struct History *newNode = (struct History *)malloc(sizeof(struct History));
-        if (!newNode)
-        {
+        if (!newNode) {
             printf("Memory allocation failed.\n");
             return;
         }
@@ -164,15 +158,13 @@ void load_data(struct ProductSales *ps)
     struct User *head2 = NULL;
     struct User *tail2 = NULL;
 
-    while (fgets(buffer, BUFFER_SIZE, fp3))
-    {
+    while(fgets(buffer,BUFFER_SIZE,fp3)){
         struct User *newNode = (struct User *)malloc(sizeof(struct User));
-        if (!newNode)
-        {
+        if (!newNode) {
             printf("Memory allocation failed.\n");
             return;
         }
-        sscanf(buffer, "%d,%100[^,],%100[^,],%20[^,]", &newNode->UserID, newNode->Username, newNode->Password, newNode->Role);
+        sscanf(buffer,"%d,%100[^,],%100[^,],%20[^,]",&newNode->UserID,newNode->Username,newNode->Password,newNode->Role);
         newNode->next = NULL;
 
         if (head2 == NULL)
@@ -188,7 +180,7 @@ void load_data(struct ProductSales *ps)
     }
 
     ps->users = head2;
-
+    
     fclose(fp1);
     fclose(fp2);
     fclose(fp3);
@@ -221,11 +213,9 @@ struct Product *createNode_StrProduct(char ID[], char stockID[], char productNam
 }
 
 /*-------------------------------------------------------------------------------------------*/
-struct User *createNode_User(char Username[], char Password[], char Role[], int UserID)
-{
-    struct User *newNode = (struct User *)malloc(sizeof(struct User));
-    if (newNode == NULL)
-    {
+struct User* createNode_User(char Username[], char Password[], char Role[], int UserID) {
+    struct User *newNode = (struct User*)malloc(sizeof(struct User));
+    if (newNode == NULL) {
         printf("Memory allocation failed!\n");
         exit(1);
     }
@@ -237,11 +227,9 @@ struct User *createNode_User(char Username[], char Password[], char Role[], int 
     return newNode;
 }
 /*------------------------------------------------------------------------------------------*/
-struct History *createNode_History(int id, int user_id, char date[7], char pro_id[6])
-{
-    struct History *newNode = (struct History *)malloc(sizeof(struct History));
-    if (newNode == NULL)
-    {
+struct History* createNode_History(int id,int user_id,char date[7],char pro_id[6]) {
+    struct History *newNode = (struct History*)malloc(sizeof(struct History));
+    if (newNode == NULL) {
         printf("Memory allocation failed!\n");
         exit(1);
     }
@@ -253,11 +241,9 @@ struct History *createNode_History(int id, int user_id, char date[7], char pro_i
 }
 
 /*------------------------------------------------------------------------------------------*/
-struct PurchaseHistory *createNode_PurchaseHistory(int UserID, char StockID[], int Quantity)
-{
-    struct PurchaseHistory *newNode = (struct PurchaseHistory *)malloc(sizeof(struct PurchaseHistory));
-    if (newNode == NULL)
-    {
+struct PurchaseHistory* createNode_PurchaseHistory(int UserID, char StockID[], int Quantity) {
+    struct PurchaseHistory *newNode = (struct PurchaseHistory*)malloc(sizeof(struct PurchaseHistory));
+    if (newNode == NULL) {
         printf("Memory allocation failed!\n");
         exit(1);
     }
@@ -268,11 +254,9 @@ struct PurchaseHistory *createNode_PurchaseHistory(int UserID, char StockID[], i
     return newNode;
 }
 /*------------------------------------------------------------------------------------------*/
-struct CartItem *createNode_CartItem(int key, int quantity)
-{
-    struct CartItem *newNode = (struct CartItem *)malloc(sizeof(struct CartItem));
-    if (newNode == NULL)
-    {
+struct CartItem* createNode_CartItem(int key, int quantity) {
+    struct CartItem *newNode = (struct CartItem*)malloc(sizeof(struct CartItem));
+    if (newNode == NULL) {
         printf("Memory allocation failed!\n");
         exit(1);
     }
@@ -301,9 +285,8 @@ void insertNode(struct Product **head, struct Product *newNode)
     }
 }
 
-void insertNodeUser(struct User **head, struct User *newNode)
-{
-    if (*head == NULL)
+void insertNodeUser(struct User **head , struct User *newNode){
+        if (*head == NULL)
     {
         *head = newNode;
     }
@@ -318,155 +301,103 @@ void insertNodeUser(struct User **head, struct User *newNode)
     }
 }
 
-// ฟังก์ชันสำหรับsearch
+//ฟังก์ชันสำหรับsearch
 
 // ฟังก์ชันสำหรับค้นหาผู้ใช้จาก Username และ IDUsername password
-struct User *searchUserByUsername(struct User *head, char Username[])
-{
+struct User* searchUserByUsername(struct User *head, char Username[]) {
     struct User *temp = head;
-    while (temp != NULL)
-    {
-        if (strcmp(temp->Username, Username) == 0)
-        {
-            return temp;
+    while (temp != NULL) {
+        if (strcmp(temp->Username, Username) == 0) {
+            return temp; 
         }
         temp = temp->next;
     }
     return NULL;
 }
 
-struct User *searchUserByID(struct User *head, int UserID)
-{
+struct User* searchUserByID(struct User *head, int UserID) {
     struct User *temp = head;
-    while (temp != NULL)
-    {
-        if (temp->UserID == UserID)
-        {
-            return temp;
+    while (temp != NULL) {
+        if (temp->UserID== UserID) {
+            return temp; 
         }
         temp = temp->next;
     }
     return NULL;
 }
 
-struct User *searchUserByUsernameAndPassword(struct User *head, char *username, char *password)
-{
+struct User *searchUserByUsernameAndPassword(struct User *head, char *username, char *password) {
     struct User *current = head;
 
-    while (current != NULL)
-    {
-        if (strcmp(current->Username, username) == 0 && strcmp(current->Password, password) == 0)
-        {
+    while (current != NULL) {
+        if (strcmp(current->Username, username) == 0 && strcmp(current->Password, password) == 0) {
             return current;
         }
         current = current->next;
     }
-    return NULL;
+    return NULL; 
 }
 /*----------------------------------------------------------*/
 
 // ฟังก์ชันสำหรับค้นหาประวัติการใช้งานโดยใช้ id user_id
-struct History *searchHistoryById(struct History *head, int id)
-{
+struct History* searchHistoryById(struct History *head, int id) {
     struct History *temp = head;
-    while (temp != NULL)
-    {
-        if (temp->id == id)
-        {
+    while (temp != NULL) {
+        if (temp->id == id) {
             return temp;
         }
         temp = temp->next;
     }
-    return NULL;
+    return NULL; 
 }
 
-struct History *searchHistoryByuser_id(struct History *head, int user_id)
-{
+struct History* searchHistoryByuser_id(struct History *head, int user_id) {
     struct History *temp = head;
-    while (temp != NULL)
-    {
-        if (temp->user_id == user_id)
-        {
+    while (temp != NULL) {
+        if (temp->user_id == user_id) {
             return temp;
         }
         temp = temp->next;
     }
-    return NULL;
+    return NULL; 
 }
 /*--------------------------------------------------------------------*/
 
 // ฟังก์ชันสำหรับค้นหาประวัติการซื้อสินค้าโดยใช้ UserID ,StockID[20]
 
-struct PurchaseHistory *searchPurchaseHistoryByUserID(struct PurchaseHistory *head, int UserID)
-{
+struct PurchaseHistory* searchPurchaseHistoryByUserID(struct PurchaseHistory *head, int UserID) {
     struct PurchaseHistory *temp = head;
-    while (temp != NULL)
-    {
-        if (temp->UserID == UserID)
-        {
-            return temp;
+    while (temp != NULL) {
+        if (temp->UserID == UserID) {
+            return temp; 
         }
         temp = temp->next;
     }
-    return NULL;
+    return NULL; 
 }
 
-struct PurchaseHistory *searchPurchaseHistoryByStockID(struct PurchaseHistory *head, char StockID[])
-{
+struct PurchaseHistory* searchPurchaseHistoryByStockID(struct PurchaseHistory *head, char StockID[]) {
     struct PurchaseHistory *temp = head;
-    while (temp != NULL)
-    {
-        if (strcmp(temp->StockID, StockID) == 0)
-        {
-            return temp;
+    while (temp != NULL) {
+        if (strcmp(temp->StockID, StockID) == 0) {
+            return temp; 
         }
         temp = temp->next;
     }
-    return NULL;
+    return NULL; 
 }
 /*------------------------------------------------------------------------------------*/
 
-struct CartItem *searchCartItemByKey(struct CartItem *head, int key)
-{
+struct CartItem* searchCartItemByKey(struct CartItem *head, int key) {
     struct CartItem *temp = head;
-    while (temp != NULL)
-    {
-        if (temp->key == key)
-        {
-            return temp;
+    while (temp != NULL) {
+        if (temp->key == key) {
+            return temp; 
         }
         temp = temp->next;
     }
-    return NULL;
+    return NULL; 
 }
-
-// Function to search product by ID and StockID
-struct Product *searchProductByIDamdStockID(struct Product *head, char *ID, char *StockID)
-{
-    while (head != NULL)
-    {
-        if (strcmp(head->ID, ID) == 0 && strcmp(head->stockID, StockID) == 0)
-        {
-            return head; // Found the product
-        }
-        head = head->next;
-    }
-    return NULL; // Product not found
-}
-
-struct Product *searchProductByID(struct Product *head, char *ID)
-{
-    while (head != NULL)
-    {
-        if (strcmp(head->ID, ID) == 0 )
-        {
-            return head; // Found the product
-        }
-        head = head->next;
-    }
-    return NULL; // Product not found
-}
-
 // log_activity ดีเเล้ว------------------------------------------------------------------------------------------------------------------------------------------------
 
 void log_activity(struct ProductSales *ps, char *action, char *details)
@@ -476,13 +407,10 @@ void log_activity(struct ProductSales *ps, char *action, char *details)
     struct tm tm = *localtime(&t);
     char timestamp[20];
     char user[100];
-    if (ps->current_user != NULL)
-    {
-        strcpy(user, ps->current_user->Username);
-    }
-    else
-    {
-        strcpy(user, "System");
+    if(ps->current_user != NULL){
+        strcpy(user,ps->current_user->Username);
+    }else{
+        strcpy(user,"System");
     }
 
     sprintf(timestamp, "%04d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
@@ -495,27 +423,27 @@ void log_activity(struct ProductSales *ps, char *action, char *details)
     }
     fprintf(file, "%s,%s,%s,%s\n", timestamp, user, action, details);
     fclose(file);
+    
 }
 
-void sortByCat(char categories[])
-{
+void sortByCat(char categories[]) {
+    // เปิดไฟล์ allCategory.csv
     FILE *file = fopen("allCategory.csv", "r");
-    if (file == NULL)
-    {
-        printf("Unable to open the file.\n");
+    if (file == NULL) {
+        printf("ไม่สามารถเปิดไฟล์ได้\n");
         return;
     }
-    fclose(file);
+    
+    
+
 }
 
 // Function to remove newline character from fgets input
-void remove_newline(char *str)
-{
+void remove_newline(char *str) {
     str[strcspn(str, "\n")] = '\0';
 }
 
-void login(struct ProductSales *ps)
-{
+void login(struct ProductSales *ps) {
     char username[100];
     char password[100];
     int attempts = 0;
@@ -525,31 +453,25 @@ void login(struct ProductSales *ps)
     remove_newline(username);
 
     struct User *USER = searchUserByUsername(ps->users, username);
-    if (USER != NULL)
-    {
-        do
-        {
+    if (USER != NULL) {
+        do {
             printf("Password: ");
             scanf("%s", password);
             remove_newline(password);
-
+            
             struct User *UserD = searchUserByUsernameAndPassword(ps->users, username, password);
-            if (UserD != NULL)
-            {
+            if (UserD != NULL) {
                 ps->current_user = UserD;
                 // printf("%p" , ps->current_user);
                 return;
-            }
-            else
-            {
+            } else {
                 attempts++;
                 printf("Incorrect password. Attempts left: %d\n", 3 - attempts);
             }
         } while (attempts < 3);
         printf("Maximum login attempts exceeded. Please try again later.\n");
-    }
-    else
-    {
+    } 
+    else {
         printf("User not found\n");
     }
     return;
@@ -560,13 +482,10 @@ void register_user_NEW(struct ProductSales *ps)
     char username[100], password[100];
     int maxUserID = 0;
     int userID;
-    FILE *fp = fopen("csv/login.csv", "r");
-    if (fp != NULL)
-    {
-        while (fscanf(fp, "%d,%99[^,],%99[^,],%9s", &userID, username, password, (char[10]){}) != EOF)
-        {
-            if (userID > maxUserID)
-            {
+       FILE *fp = fopen("csv/login.csv", "r");
+    if (fp != NULL) {
+        while (fscanf(fp, "%d,%99[^,],%99[^,],%9s", &userID, username, password, (char[10]){}) != EOF) {
+            if (userID > maxUserID) {
                 maxUserID = userID;
             }
         }
@@ -586,43 +505,39 @@ void register_user_NEW(struct ProductSales *ps)
 
     // Open file in append mode to add the new user
     fp = fopen("csv/login.csv", "a");
-    if (fp != NULL)
-    {
+    if (fp != NULL) {
         fprintf(fp, "%d,%s,%s,%s\n", userID, username, password, "user");
         fclose(fp);
         printf("Registration successful. UserID: %d\n", userID);
-    }
-    else
-    {
+    } else {
         printf("Registration failed\n");
     }
 }
 
+
 void main_menu(struct ProductSales *ps)
 {
     int option;
-    do
+    do{
+    printf("Main Menu\n");
+    printf("1. Login\n");
+    printf("2. Register\n");
+    printf("3. Exit\n");
+    scanf("%d", &option);
+    clear_terminal();
+    switch (option)
     {
-        printf("Main Menu\n");
-        printf("1. Login\n");
-        printf("2. Register\n");
-        printf("3. Exit\n");
-        scanf("%d", &option);
-        clear_terminal();
-        switch (option)
-        {
-        case 1:
-            run(ps);
-            break;
-        case 2:
-            register_user_NEW(ps);
-            break;
-        case 3:
-            break;
-        default:
-            printf("Invalid choice. Please try again.");
-        }
-    } while (option != 3);
+    case 1:
+        run(ps);
+        break;
+    case 2:
+        register_user_NEW(ps);
+        break;
+    case 3:
+        break;
+    default:
+        printf("Invalid choice. Please try again.");
+    }}while(option != 3);
 }
 
 void admin_menu(struct ProductSales *ps)
@@ -632,23 +547,26 @@ void admin_menu(struct ProductSales *ps)
     do
     {
         printf("Admin Menu\n");
-        printf("1. Manage Product\n");
-        printf("2. View User Order\n");
-        printf("-1. Exit\n");
+        printf("1. Add product\n");
+        printf("2. Delete product\n");
+        printf("3. Edit product\n");
         scanf("%d", &option);
         clear_terminal();
         switch (option)
         {
         case 1:
-            manage_products(ps);
+            snprintf(outputFileName, sizeof(outputFileName), "addProduct.csv");
             break;
         case 2:
-            view_orders(ps);
+            snprintf(outputFileName, sizeof(outputFileName), "deleteProduct.csv");
+            break;
+        case 3:
+            snprintf(outputFileName, sizeof(outputFileName), "editProduct.csv");
             break;
         default:
             printf("Invalid choice. Please try again.");
         }
-    } while (option != -1);
+    } while (option != 3);
 
     // view_products(&ps, &outputFileName);
 }
@@ -671,7 +589,7 @@ void manage_products(struct ProductSales *ps)
         switch (choice)
         {
         case 1:
-            view_products(ps);
+            view_products(ps, "product.csv");
             break;
         case 2:
             add_product(ps);
@@ -690,10 +608,9 @@ void manage_products(struct ProductSales *ps)
     }
 }
 
-void view_products(struct ProductSales *ps)
+void view_products(struct ProductSales *ps, char outputFileName[20])
 {
     // View products logic here
-    char outputFileName[] = "csv/product.csv";
     FILE *file = fopen(outputFileName, "r");
     if (file == NULL)
     {
@@ -703,19 +620,10 @@ void view_products(struct ProductSales *ps)
     struct User users[MAX_USERS];
     struct Product *newNode = (struct Product *)malloc(sizeof(struct Product));
     int num = 0;
-    char buffer[255];
-    while (fgets(buffer, 255, file))
+    while (fscanf(file, "%s %d", newNode->ID, &newNode->price) != EOF)
     {
-        sscanf(buffer, "%6[^,],%6[^,],%100[^,],%d,%7[^,],%7[^,],%50[^,],%d,%d,%d,%d,%d",
-               newNode->ID, newNode->stockID, newNode->productName, &newNode->price, newNode->imports,
-               newNode->exports, newNode->category, &newNode->stock, &newNode->access,
-               &newNode->addToCart, &newNode->buy, &newNode->key);
         num++;
-        printf("No. %d |", num);
-        printf("ID: %s | ", newNode->ID);
-        printf("Stock ID: %s | ", newNode->stockID);
-        printf("Product Name: %s | ", newNode->productName);
-        printf("Price: %d\n", newNode->price);
+        printf("No. %d  ID : %s Price = %d\n",num, newNode->ID, newNode->price);
     }
 
     if (num == 0)
@@ -731,8 +639,8 @@ void add_product(struct ProductSales *ps)
 {
 
     struct Product *newNode = (struct Product *)malloc(sizeof(struct Product));
-    char filename[] = "csv/product.csv";
-    char idToEdit[6];
+    const char *filename = "product.csv";
+    char idToEdit[6]; 
     printf("Enter new ID: ");
     scanf("%5s", newNode->ID);
     getchar();
@@ -763,9 +671,9 @@ void add_product(struct ProductSales *ps)
 
     // สร้างข้อมูลแถวใหม่ในรูปแบบ CSV
     char newData[MAX_LINE_LENGTH];
-    snprintf(newData, sizeof(newData), "%s,%s,%s,%d,%s,%s,%s,%d,0,0,0,0\n",
+    snprintf(newData, sizeof(newData), "%s,%s,%s,%d,%s,%s,%s,%d\n",
              newNode->ID, newNode->stockID, newNode->productName, newNode->price, newNode->imports, newNode->exports, newNode->category, newNode->stock);
-
+    
     FILE *file = fopen(filename, "a");
     if (file == NULL)
     {
@@ -774,23 +682,17 @@ void add_product(struct ProductSales *ps)
     }
 
     fputs(newData, file);
-    struct Product *head = ps->products;
-    while (head->next != NULL)
-    {
-        head = head->next;
-    }
-    head->next = newNode;
-    newNode->next = NULL;
 
     fclose(file);
 }
-// update_product ดีเเล้ว------------------------------------------------------------------------------------------------------------------------------------------------
+//update_product ดีเเล้ว------------------------------------------------------------------------------------------------------------------------------------------------
 
 void update_product(struct ProductSales *ps)
 {
     struct Product *newNode = (struct Product *)malloc(sizeof(struct Product));
-    char filename[] = "csv/product.csv";
+    const char *filename = "product.csv";
     char idToEdit[7]; // เพิ่มขนาดเป็น 7 เพื่อให้สามารถเก็บ 6 อักขระ + null terminator
+
 
     printf("Enter ID to edit: ");
     scanf("%5s", idToEdit);
@@ -887,26 +789,17 @@ void update_product(struct ProductSales *ps)
 
 void delete_product(struct ProductSales *ps)
 {
-    char IDdelete[6];
-    char stockToDelete[6];
+    const char *filename = "product.csv";
+    
+    char idToDelete[6];
     printf("Enter ID to delete: ");
-    if (scanf("%5s", IDdelete) != 1)
-    {
-        printf("Invalid input.\n");
-        return;
-    }
-    printf("Enter Stock ID to delete: ");
-    if (scanf("%5s", stockToDelete) != 1)
-    {
-        printf("Invalid input.\n");
-        return;
-    }
+    scanf("%5s", idToDelete);
 
-    FILE *file = fopen("csv/product.csv", "r");
-    if (file == NULL)
+    FILE *file = fopen("data.csv", "r");
+    while (file == NULL)
     {
-        perror("File opening error");
-        exit(EXIT_FAILURE);
+        file = fopen("data.csv", "w");
+        printf("Hello\n");
     }
 
     char line[MAX_LINE_LENGTH];
@@ -917,16 +810,10 @@ void delete_product(struct ProductSales *ps)
     while (fgets(line, sizeof(line), file))
     {
         char id[6];
-        char stock[6];
-        sscanf(line, "%5[^,],%5[^,]", id, stock);
-        if (strcmp(id, IDdelete) != 0 || strcmp(stock, stockToDelete) != 0)
+        sscanf(line, "%5[^,]", id);
+        if (strcmp(id, idToDelete) != 0)
         {
             rows[rowCount] = strdup(line);
-            if (rows[rowCount] == NULL)
-            {
-                printf("Memory allocation error.\n");
-                exit(EXIT_FAILURE);
-            }
             rowCount++;
         }
         else
@@ -939,7 +826,7 @@ void delete_product(struct ProductSales *ps)
 
     if (found)
     {
-        file = fopen("csv/product.csv", "w");
+        file = fopen(filename, "w");
         if (file == NULL)
         {
             perror("File opening error");
@@ -949,140 +836,147 @@ void delete_product(struct ProductSales *ps)
         for (int i = 0; i < rowCount; i++)
         {
             fputs(rows[i], file);
-            free(rows[i]);
+            free(rows[i]); // ปล่อยหน่วยความจำ
         }
 
         fclose(file);
-        printf("Product with ID %s and Stock ID %s has been deleted.\n", IDdelete, stockToDelete);
     }
     else
     {
-        printf("Product with ID %s and Stock ID %s not found in %s.\n", IDdelete, stockToDelete, "csv/product.csv");
+        printf("ID %s not found in %s.\n", idToDelete, filename);
     }
 }
 
 void view_orders(struct ProductSales *ps)
 {
-    int i = 0;
-    struct History *node = ps->user_history;
+    int user_id;
+    printf("Enter user ID: ");
+    scanf("%d", &user_id);
 
-    while (node != NULL)
-    {
-        // char char_user_id = (char)node->user_id;
-        //struct Product *head = searchPurchaseHistoryByUserID(ps->user_history, node->user_id);
-        printf("No : %d | User ID : %d\n", i++, node->user_id);
-        while (head != NULL)
-        {
-            printf("Product Name: %s | Date: %s\n", head->productName, node->date);
-            node = node->next;
-            head = head->next;
+    // Calculate the maximum key value for dynamic array allocation
+    int maxKey = 0;
+    struct Product *tempProduct = ps->products;
+    while (tempProduct != NULL) {
+        if (tempProduct->key > maxKey) {
+            maxKey = tempProduct->key;
         }
-        node = node->next;
+        tempProduct = tempProduct->next;
     }
-    product_detail(ps);
+
+    // Allocate memory for product quantities dynamically based on the max key
+    int *productQuantities = (int *)calloc(maxKey + 1, sizeof(int));
+    if (productQuantities == NULL) {
+        printf("Memory allocation failed.\n");
+        return;
+    }
+
+    struct History *currentHistory = ps->user_history;
+    struct Product *currentProduct;
+
+    // Traverse the user history to find matching user_id entries
+    while (currentHistory != NULL) {
+        if (currentHistory->user_id == user_id) {
+            // Find the product in the product list
+            currentProduct = ps->products;
+            while (currentProduct != NULL) {
+                if (strcmp(currentProduct->ID, currentHistory->pro_id) == 0) {
+                    // Increment the quantity of the product
+                    productQuantities[currentProduct->key]++;
+                    break;
+                }
+                currentProduct = currentProduct->next;
+            }
+        }
+        currentHistory = currentHistory->next;
+    }
+
+    // Display the results
+    printf("Orders for user ID %d:\n", user_id);
+    currentProduct = ps->products;
+    while (currentProduct != NULL) {
+        if (productQuantities[currentProduct->key] > 0) {
+            printf("Product: %s, Quantity: %d\n", currentProduct->productName, productQuantities[currentProduct->key]);
+        }
+        currentProduct = currentProduct->next;
+    }
+
+    // Free allocated memory
+    free(productQuantities);
 }
+// void generate_report(struct ProductSales *ps)
+// {
+//     int product_purchase_count[ps->product_count];
+//     memset(product_purchase_count, 0, sizeof(product_purchase_count));
 
-void customer_menu(struct ProductSales *ps)
-{
+//     for (int i = 0; i < ps->purchase_history_count; i++)
+//     {
+//         char *stock_id = ps->purchase_history[i].stock_id;
+//         for (int j = 0; j < ps->product_count; j++)
+//         {
+//             if (strcmp(ps->products[j].stock_id, stock_id) == 0)
+//             {
+//                 product_purchase_count[j]++;
+//                 break;
+//             }
+//         }
+//     }
 
+//     printf("\nPurchase Report:\n");
+//     for (int i = 0; i < ps->product_count; i++)
+//     {
+//         printf("Product: %s, StockID: %s, Purchases: %d\n", ps->products[i].product_name, ps->products[i].stock_id, product_purchase_count[i]);
+//     }
+// }
+
+void customer_menu(struct ProductSales *ps){
+    
     int choice;
 
-    while (1)
-    {
+    while(1) {
         printf("\nCustomer Menu:\n");
         printf("1. View Recommended Products\n");
         printf("2. View All Products\n");
-        printf("3. View Cart\n");
-        printf("4. Search by Category\n");
+        printf("3. Add Product to Cart\n");
+        printf("4. View Cart\n");
+        //printf("5. Checkout\n");
         printf("5. Logout\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
-        switch (choice)
-        {
-        case 1:
-            view_recommended_products(ps);
-            break;
-        case 2:
-            view_all_products(ps);
-            break;
-        case 3:
-            view_cart(ps);
-            break;
-        case 4:
-            search_by_cat(ps);
-        /*case 5:
-            checkout(ps);
-            break;*/
-        case 5:
-            return;
-        default:
-            printf("Invalid choice. Please try again.\n");
+        switch(choice) {
+            case 1:
+                view_recommended_products(ps);
+                break;
+            case 2:
+                view_all_products(ps);
+                break;
+            case 3:
+                add_to_cart(ps);
+                break;
+            case 4:
+                view_cart(ps);
+                break;
+            /*case 5:
+                checkout(ps);
+                break;*/
+            case 5:
+                return;
+            default:
+                printf("Invalid choice. Please try again.\n");
         }
     }
 }
-void search_by_cat(struct ProductSales *ps)
-{
 
-    printf("choose category\n");
-    FILE *fp = fopen("csv/allCategory.csv", "r");
-    int id[100], i = 1;
-    char cat[100][20];
-    while (fscanf(fp, "%d,%s", &id[i], cat[i]) != EOF)
-    {
-        remove_newline(cat[i]);
-        printf("%d. %s\n", id[i], cat[i]);
-    }
-    fclose(fp);
-    printf("enter category: ");
-    int userCate;
-    scanf("%d", &userCate);
-    i = 1;
-    struct Product *tmp = ps->products;
-    while (tmp->next != NULL)
-    {
-        if (strcmp(tmp->category, cat[i]) == 0)
-        {
-            printf("ID: %s | ", tmp->ID);
-            printf("Stock ID: %s | ", tmp->stockID);
-            printf("Product Name: %s | ", tmp->productName);
-            printf("Price: %d\n", tmp->price);
-        }
-        tmp = tmp->next;
-    }
-
-    //------- floyd Suggestion ---------
-    int *suggestArr = dealWithFloyd(i);
-    int z = 0;
-    tmp = ps->products;
-    printf("Or Similar Category : \'%s\'\n", cat[suggestArr[0]]);
-    while (tmp->next != NULL)
-    {
-        if (strcmp(tmp->category, cat[suggestArr[0]]) == 0 && z <= 3)
-        {
-            printf("ID: %s | ", tmp->ID);
-            printf("Stock ID: %s | ", tmp->stockID);
-            printf("Product Name: %s | ", tmp->productName);
-            printf("Price: %d\n", tmp->price);
-            z++;
-        }
-        tmp = tmp->next;
-    }
-    product_detail(ps);
-}
 // sorting For suggesion
 
-void swap(struct Product **a, struct Product **b)
-{
+void swap(struct Product **a, struct Product **b) {
     struct Product *tmp = *a;
     *a = *b;
     *b = tmp;
 }
 
-void sortingSuggestValue(struct Product **start)
-{
-    if (*start == NULL || (*start)->next == NULL)
-    {
+void sortingSuggestValue(struct Product **start) {
+    if (*start == NULL || (*start)->next == NULL) {
         return;
     }
     printf("now ssv\n");
@@ -1090,24 +984,20 @@ void sortingSuggestValue(struct Product **start)
     // Get the length of the linked list
     int n = 0;
     struct Product *tmp = *start;
-    while (tmp != NULL)
-    {
+    while (tmp != NULL) {
         n++;
         tmp = tmp->next;
     }
 
     // Bubble sort the linked list based on the calculated value
-    for (int i = 0; i < n - 1; i++)
-    {
+    for (int i = 0; i < n - 1; i++) {
         struct Product **current = start;
-        for (int j = 0; j < n - i - 1; j++)
-        {
+        for (int j = 0; j < n - i - 1; j++) {
             struct Product *next = (*current)->next;
             int currentValue = (*current)->buy * 4 + (*current)->addToCart * 2 + (*current)->access;
             int nextValue = next->buy * 4 + next->addToCart * 2 + next->access;
 
-            if (currentValue < nextValue)
-            {
+            if (currentValue < nextValue) {
                 struct Product *temp = *current;
                 *current = next;
                 temp->next = next->next;
@@ -1117,6 +1007,7 @@ void sortingSuggestValue(struct Product **start)
         }
     }
 }
+
 
 void printNode(struct Product **start)
 {
@@ -1128,16 +1019,15 @@ void printNode(struct Product **start)
 
     while (ptr != NULL)
     {
-        printf("%s %d", ptr->productName, (ptr->buy) * 4 + (ptr->addToCart) * 2 + (ptr->access));
+        printf("%s %d", ptr->productName , (ptr->buy)*4+(ptr->addToCart)*2+(ptr->access));
         ptr = ptr->next;
     }
 }
 
-void view_recommended_products(struct ProductSales *ps)
-{
+void view_recommended_products(struct ProductSales *ps) {
     // Uncomment the line below if you want to clear the terminal.
     // clear_terminal();
-
+    
     struct Product *product = ps->products;
     // printf("Now vrp\n");
     sortingSuggestValue(&product);
@@ -1146,175 +1036,102 @@ void view_recommended_products(struct ProductSales *ps)
     int recommendation_count = 5;
     struct Product *tmp = product;
 
-    for (int i = 0; i < recommendation_count && tmp != NULL; i++)
-    {
-        printf("Product ID: %s | ", tmp->ID);
+    for (int i = 0; i < recommendation_count && tmp != NULL; i++) {
+        printf("ID: %s | ", tmp->ID);
         printf("Stock ID: %s | ", tmp->stockID);
         printf("Product Name: %s | ", tmp->productName);
         printf("Price: %d\n", tmp->price);
         tmp = tmp->next;
     }
-    product_detail(ps);
 }
 
-void product_detail(struct ProductSales *ps)
-{
-    
-    // FILE *fp = fopen("csv/product.csv", "w");
-    // while (head != NULL)
-    // {
-    //     fprintf(fp, "%s,%s,%s,%d,%s,%s,%s,%d,%d,%d,%d,%d\n", head->ID, head->stockID, head->productName, head->price, head->imports,
-    //             head->exports, head->category, head->stock, head->access,
-    //             head->addToCart, head->buy, head->key);
-    //     head = head->next;
-    // }
-    // fclose(fp);
-    char productId[6], stockId[6];
-    printf("\n\nEnter ProductID and StockID of product you want to view detail (if exit -1)\n");
-    printf("ProductID : ");
-    scanf("%s", productId);
-    remove_newline(productId);
-    if (strcmp(productId, "-1") == 0)
-    {
-        return;
-    }
-    struct Product *product = searchProductByIDamdStockID(ps->products, productId, "");
-    if (product == NULL)
-    {
-        printf("ProductID not found.\n");
-        return;
-    }
-    printf("StockID : ");
-    scanf("%s", stockId);
-    remove_newline(stockId);
-    if (strcmp(stockId, "-1") == 0)
-    {
-        return;
-    }
-    product = searchProductByIDamdStockID(ps->products, productId, stockId);
-    if (product == NULL)
-    {
-        printf("StockID not found.\n");
-        return;
-    }
+void product_detail(struct ProductSales *ps , char *stockId){
+    struct Product *product = ps->products;
     struct Product *tmp = product;
     int isRemain = 0;
-    int option;
-    int amount;
-
-    int key1 = atoi(tmp->ID) + atoi(tmp->stockID);
-    int key = atoi(productId) + atoi(stockId);
     while (tmp != NULL)
     {
-        if ((key1 == key) && tmp->stock > 0)
-        {
+        if(strcmp(tmp->stockID,stockId)==0 && tmp->stock > 0){
             isRemain = 1;
-            break;
+        break;
         }
         tmp = tmp->next;
     }
-
-    printf("Product ID : %s\n", product->stockID);
-    printf("Product Name : %s | Category : %s\n", product->productName, product->category);
+    printf("Product ID : %s\n" , tmp->stockID);
+    printf("Product Name : %s | Category : %s\n" , tmp->productName,tmp->category);
     printf("Status : ");
 
-    if (isRemain == 1)
-    {
-        printf("\'Product Remaining --%d--\'",product->stock);
+    if(isRemain==1){
+        printf("\'Product Remaining\'");
+        
     }
-    else if (isRemain == 0)
-    {
+    else if(isRemain==0){
         printf("\'Out Of Stock\'");
     }
     printf("\n");
-    printf("Price : %d\n", product->price);
-
-    printf("Menu:\n");
-    printf("1.Add to cart\n");
-    printf("2.Buy\n");
-    printf("Enter your choice (type -1 to back): ");
-    scanf("%d", &option);
-    switch (option)
-    {
-    case 1:
-        printf("Required quantity : ");
-        scanf("%d", &amount);
-        add_to_cart(ps, productId, stockId, amount);
-        break;
-    case 2:
-        printf("Required quantity : ");
-        scanf("%d", &amount);
-        buy(ps, productId, stockId, amount);
-        break;
-    case -1:
-        return;
-        break;
-    default:
-        printf("Invalid choice.\n");
-        break;
-    }
+    printf("Price : %d\n" , tmp->price);
 }
 // //ต้องทำ*********************************
 
-void add_to_cart(struct ProductSales *ps, char ID[6], char StockID[6], int amount)
+void add_to_cart(struct ProductSales *ps)
 {
+    char stock_id[50];
+    int quantity;
+    printf("Enter Stock ID of the product to add to cart: ");
+    scanf("%s", stock_id);
+    //remove_newline(stock_id);
     struct Product *head = ps->products;
-    struct Product *p;
-    p = searchProductByIDamdStockID(head, ID, StockID);
-    if (p->stock < amount)
+    while (head != NULL)
     {
+       if(strcmp(stock_id,head->ID) == 0){
+        break;
+       }
+       head = head->next;
+    }
+    if(head->stock <= 0){
         printf("Out of stock\n");
+        return;
+    }else if(head == NULL){
+        printf("Product not found.\n");
+        return;
+    }else{
+        printf("product name : %s\n",head->productName);
+        printf("Enter quantity to add: ");
+        scanf("%d", &quantity);
+            FILE *file = fopen("csv/addToCart.csv", "a");
+            fprintf(file, "%d,%d,%d\n", ps->current_user->UserID, atoi(head->ID) + atoi(head->stockID), quantity);
+            fclose(file);
+            head->addToCart++;
     }
-    else
-    {
-        printf("%s is added\n", p->productName);
-        FILE *file = fopen("csv/addToCart.csv", "a");
-        fprintf(file, "%d,%d,%d\n", ps->current_user->UserID, atoi(p->ID) + atoi(p->stockID), amount);
-        fclose(file);
-        p->addToCart = p->addToCart + amount;
-        printf("--%d--", p->stock);
-        FILE *fp = fopen("csv/product.csv", "w");
-        while (head != NULL)
-        {
-            fprintf(fp, "%s,%s,%s,%d,%s,%s,%s,%d,%d,%d,%d,%d\n", head->ID, head->stockID, head->productName, head->price, head->imports,
-                    head->exports, head->category, head->stock, head->access,
-                    head->addToCart, head->buy, head->key);
-            head = head->next;
-        }
-        fclose(fp);
-    }
+    
+    
 }
 
 void view_cart(struct ProductSales *ps)
 {
     int user_id = ps->current_user->UserID;
     struct Product *head = ps->products;
-    struct PurchaseHistory *node = (struct PurchaseHistory *)malloc(sizeof(struct PurchaseHistory));
+    struct PurchaseHistory *node = (struct PurchaseHistory*)malloc(sizeof(struct PurchaseHistory));
     FILE *file = fopen("csv/addToCart.csv", "r");
-    char buff[255];
-    while (fgets(buff, 255, file))
-    {
-        sscanf(buff, "%d,%[^,],%d", &node->UserID, node->StockID, &node->Quantity);
-        if (node->UserID == user_id)
+
+    while(fscanf(file,"%d,%[^,],%d",&node->UserID,node->StockID,&node->Quantity) != EOF){
+        if(node->UserID == user_id){
+        printf("User Id : %d \n",user_id);
+        struct Product *pdd = ps->products;
+        while (pdd->next != NULL)
         {
-            printf("User Id : %d \n", user_id);
-            struct Product *pdd = ps->products;
-            while (pdd->next != NULL)
-            {
-                if (atoi(pdd->ID) + atoi(pdd->stockID) == atoi(node->StockID))
-                {
-                    printf("Product name : %s \n", pdd->productName);
-                    break;
-                }
-                pdd = pdd->next;
-            }
-            printf("Quantity : %d \n", node->Quantity);
-            printf("---------------------------------------------\n");
+           if(atoi(pdd->ID)+atoi(pdd->stockID) == atoi(node->StockID)){
+            printf("Product name : %s \n", pdd->productName);
+            break;
+           }
+           pdd = pdd->next;
+        }
+        printf("Quantity : %d \n", node->Quantity);
+        printf("---------------------------------------------\n");
         }
     }
-    fclose(file);
 }
-// ยังไม่ได้เทส อัพเดตล่าสุด 16/05/67 02:53
+//ยังไม่ได้เทส อัพเดตล่าสุด 16/05/67 02:53
 void checkout(struct ProductSales *ps)
 {
     if (ps == NULL)
@@ -1355,7 +1172,7 @@ void checkout(struct ProductSales *ps)
         struct PurchaseHistory *ph = malloc(sizeof(struct PurchaseHistory));
         if (ph == NULL)
         {
-            fprintf(stderr, "Memory allocation error.\n");
+            fprintf(stderr, "Memory allocation error.\n");                      
             exit(EXIT_FAILURE);
         }
         ph->UserID = ps->current_user->UserID;
@@ -1418,7 +1235,7 @@ void checkout(struct ProductSales *ps)
 //     //         save_data(ps);
 //     //         printf("Checkout complete!\n");
 //     //     }
-
+    
 //     if (ps->cart_count == 0)
 //     {
 //         printf("Your cart is empty.\n");
@@ -1451,17 +1268,11 @@ void checkout(struct ProductSales *ps)
 //         printf("Checkout complete!\n");
 //     }
 // }
-// view_all_products ดีเเล้ว------------------------------------------------------------------------------------------------------------------------------------------------
-void view_all_products(struct ProductSales *ps)
-{
+//view_all_products ดีเเล้ว------------------------------------------------------------------------------------------------------------------------------------------------
+void view_all_products(struct ProductSales *ps){ 
     char ID[6];
     char StockID[6];
     struct Product *head = ps->products;
-    if (head == NULL)
-    {
-        printf("No products available.\n");
-        return;
-    }
     while (head != NULL)
     {
         printf("ID: %s | ", head->ID);
@@ -1470,246 +1281,91 @@ void view_all_products(struct ProductSales *ps)
         printf("Price: %d\n", head->price);
         head = head->next;
     }
-    printf("\n");
-    product_detail(ps);
+    printf("back to manu\ntype -1\n");
+    printf("type ID and StockID product you want to buy : ");
+
+    if (scanf("%5s %5s", ID, StockID) != 2) {
+        // Handle error or exit gracefully
+        return;
+    }
+    
+    
+    
 }
 
-// run ดีเเล้ว------------------------------------------------------------------------------------------------------------------------------------------------
+//run ดีเเล้ว------------------------------------------------------------------------------------------------------------------------------------------------
 
 void run(struct ProductSales *ps)
 {
     int i;
     load_data(ps);
-    while (1)
-    {
+    while (1){
         login(ps);
-        // printf("%p" , ps->current_user);
-        if (ps->current_user != NULL)
-        {
-            remove_newline(ps->current_user->Role);
+        //printf("%p" , ps->current_user);
+        remove_newline(ps->current_user->Role);
+        if (ps->current_user != NULL){
             // printf("|%s|" , ps->current_user->Role);
-            if (strcmp(ps->current_user->Role, "admin") == 0)
-            {
+            if (strcmp(ps->current_user->Role, "admin") == 0){
                 admin_menu(ps);
             }
-            else if (strcmp(ps->current_user->Role, "user") == 0)
-            {
+            else if (strcmp(ps->current_user->Role, "user") == 0){
                 customer_menu(ps);
             }
         }
-        else
-        {
+        else{
             printf("Type 1 to try again, type -1 to exit. : ");
-            scanf("%d", &i);
-            if (i == -1)
-            {
+            scanf("%d",&i);
+            if(i == -1){
                 return;
             }
         }
     }
+    
+    
 }
 
-int **readAllData(const char *cateFile, int *numRows, int *numCols)
-{
-    FILE *fp = fopen(cateFile, "r");
-    if (fp == NULL)
-    {
-        perror("Failed to open file");
-        return NULL;
-    }
 
-    char buffer[1024];
-    *numRows = 0;
-    while (fgets(buffer, sizeof(buffer), fp) != NULL)
-    {
-        (*numRows)++;
-    }
-
-    fseek(fp, 0, SEEK_SET);
-
-    if (fgets(buffer, sizeof(buffer), fp) == NULL)
-    {
-        fclose(fp);
-        return NULL;
-    }
-
-    *numCols = 0;
-    char *token = strtok(buffer, " ");
-    while (token != NULL)
-    {
-        (*numCols)++;
-        token = strtok(NULL, " ");
-    }
-
-    int **arr = (int **)malloc(*numRows * sizeof(int *));
-    if (arr == NULL)
-    {
-        perror("Failed to allocate memory for rows");
-        fclose(fp);
-        return NULL;
-    }
-    for (int i = 0; i < *numRows; i++)
-    {
-        arr[i] = (int *)malloc(*numCols * sizeof(int));
-        if (arr[i] == NULL)
-        {
-            perror("Failed to allocate memory for columns");
-            for (int j = 0; j < i; j++)
-            {
-                free(arr[j]);
-            }
-            free(arr);
-            fclose(fp);
-            return NULL;
-        }
-    }
-
-    fseek(fp, 0, SEEK_SET);
-
-    int i = 0;
-    while (fgets(buffer, sizeof(buffer), fp) != NULL)
-    {
-        int j = 0;
-        token = strtok(buffer, " ");
-        while (token != NULL)
-        {
-            arr[i][j] = atoi(token);
-            j++;
-            token = strtok(NULL, " ");
-        }
-        i++;
-    }
-
-    fclose(fp);
-    return arr;
-}
-
-void floydWarshall(int **dist, int V)
-{
+void floydWarshall(int dist[][V]) {
     int i, j, k;
-    for (k = 0; k < V; k++)
-    {
-        for (i = 0; i < V; i++)
-        {
-            for (j = 0; j < V; j++)
-            {
+    for (k = 0; k < V; k++) {
+        for (i = 0; i < V; i++) {
+            for (j = 0; j < V; j++) {
                 if (dist[i][k] + dist[k][j] < dist[i][j])
                     dist[i][j] = dist[i][k] + dist[k][j];
             }
         }
     }
-}
 
-int *printSortedRow(int **arr, int numRows, int numCols, int chosenRowIndex)
-{
-    floyd *sortSuggest = (floyd *)malloc(numCols * sizeof(floyd));
-    if (chosenRowIndex < 0 || chosenRowIndex >= numRows)
-    {
-        printf("Invalid row index\n");
-    }
-    int *row = (int *)malloc((numCols) * sizeof(int));
-    if (row == NULL)
-    {
-        perror("Failed to allocate memory for row");
-    }
-    int k = 0;
-    for (int j = 0; j <= numCols; j++)
-    {
-        sortSuggest[k++].floydValue = arr[chosenRowIndex][j];
-        sortSuggest[k].position = j + 1;
-    }
-
-    for (int i = 0; i <= numCols - 2; i++)
-    {
-        for (int j = 0; j <= numCols - 2 - i; j++)
-        {
-            if (sortSuggest[j].floydValue < sortSuggest[j + 1].floydValue)
-            {
-                floyd temp = sortSuggest[j];
-                sortSuggest[j] = sortSuggest[j + 1];
-                sortSuggest[j + 1] = temp;
-            }
+    // Print the shortest distance matrix
+    printf(
+        "The following matrix shows the shortest distances"
+        " between every pair of vertices \n");
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            if (dist[i][j] == INF)
+                printf("%7s", "INF");
+            else
+                printf("%7d", dist[i][j]);
         }
-    }
-
-    for (int i = 0; i <= numCols - 1; i++)
-    {
-        // printf("%d | %d\n", sortSuggest[i].position, sortSuggest[i].floydValue);
-    }
-    // printf("\n");
-
-    for (int i = 0; i <= numCols - 1; i++)
-    {
-        row[i] = (sortSuggest[i].position + 1);
-        // printf("%d ", row[i]);
-    }
-
-    return row;
-}
-
-int *dealWithFloyd(int productChose)
-{
-    char *cateFile = "csv/cateFile.csv"; // Path to the cateFile
-    int numRows = 0;
-    int numCols = 0;
-    int **result = readAllData(cateFile, &numRows, &numCols);
-
-    // Assuming the number of columns determines the value of V
-    int V = numCols;
-
-    // Run the Floyd-Warshall algorithm
-    floydWarshall(result, V);
-    // printf("DB2");
-
-    // Print the sorted row (e.g., row index 1)
-    int *suggest = printSortedRow(result, numRows, numCols, productChose);
-
-    // Free allocated memory
-    for (int i = 0; i < numRows; i++)
-    {
-        free(result[i]);
-    }
-    free(result);
-
-    return suggest;
-}
-
-void buy(struct ProductSales *ps, char ID[6], char StockID[6], int amount)
-{
-    struct Product *head = ps->products;
-    struct Product *p;
-    p = searchProductByIDamdStockID(head, ID, StockID);
-    if (p->stock < amount)
-    {
-        printf("Out of stock\n");
-    }
-    else
-    {
-        printf("%s was/were bought.\n", p->productName);
-        /*FILE *file = fopen("csv/addToCart.csv", "a");
-        fprintf(file, "%d,%d,%d\n", ps->current_user->UserID, atoi(p->ID) + atoi(p->stockID), amount);
-        fclose(file);*/
-        p->stock = p->stock - amount;
-        p->buy = p->buy + amount;
-        printf("--%d--", p->stock);
-        FILE *fp = fopen("csv/product.csv", "w");
-        while (head != NULL)
-        {
-            fprintf(fp, "%s,%s,%s,%d,%s,%s,%s,%d,%d,%d,%d,%d\n", head->ID, head->stockID, head->productName, head->price, head->imports,
-                    head->exports, head->category, head->stock, head->access,
-                    head->addToCart, head->buy, head->key);
-            head = head->next;
-        }
-        fclose(fp);
+        printf("\n");
     }
 }
+
+void shop(){
+    
+}
+
+void buy(){
+    
+}
+
+
 
 //------------------------------------------------------------------------MAIN------------------------------------------------------------------------
 int main()
 {
     struct ProductSales *app = malloc(sizeof(struct ProductSales));
-    if (app == NULL)
-    {
+    if (app == NULL) {
         printf("Failed to allocate memory for app\n");
         return 1;
     }
@@ -1717,9 +1373,9 @@ int main()
     printf("Welcome to CashierX\n");
     printf("By ShopWiz Co.,Ltd.\n");
     main_menu(app);
-
+    
     // Don't forget to free the memory you allocated
     free(app);
-
+    
     return 0;
 }

@@ -24,7 +24,7 @@ struct Product
     int access;                                     // จำนวนการกดดูสินค้านั้นๆ
     int addToCart;                                  // จำนวนการเพิ่มสินค้านั้นๆลงตระกร้า
     int buy;                                        // จำนวนการซื้อ(ครั้ง)
-    int key;              //Key                     // ค่าที่เอาไว้วัดระดับการ insert มาจาก access + addToCart + buy
+    int key;              //Key                     // ค่าที่เอาไว้วัดระดับการ insert มาจาก ID + stockID
     struct Product *next;
 };
 
@@ -85,5 +85,10 @@ struct ProductSales
     int purchase_history_count;
     int cart_count;
 };
+
+typedef struct floyd{
+    int position;
+    int floydValue;
+}floyd;
 
 #endif

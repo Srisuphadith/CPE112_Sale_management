@@ -483,40 +483,98 @@ void load_data(struct ProductSales *ps)
 //     }
     
 // }
-void register_user(struct ProductSales *ps) {
-    char username[100], password[100];
-        printf("Enter new username: ");
-        scanf("%s", username);
-        //remove_newline(username);
+// void register_user(struct ProductSales *ps) {
+//     char username[100], password[100];
+//         printf("Enter new username: ");
+//         scanf("%s", username);
+//         //remove_newline(username);
         
-    printf("Enter password: ");
-    scanf("%s", password);
-    //remove_newline(password);
-    int ud;
-    //struct User *user = createNode_User(username, password, "user", ps->users->UserID);
-    //insertNodeUser(&(ps->users), user); // Insert the user node into the user list
-    struct User *head = ps->users;
-    while (head->next != NULL)
+//     printf("Enter password: ");
+//     scanf("%s", password);
+//     //remove_newline(password);
+//     int ud;
+//     //struct User *user = createNode_User(username, password, "user", ps->users->UserID);
+//     //insertNodeUser(&(ps->users), user); // Insert the user node into the user list
+//     struct User *head = ps->users;
+//     while (head->next != NULL)
+//     {
+//         head = head->next;
+        
+//     }
+//     FILE *fp = fopen("csv/login.csv", "a");
+//     if(fp!=NULL){
+//         printf("%d",head->UserID);
+//         fprintf(fp, "%d,%s,%s,%s\n", head->UserID+1, username, password,"user");
+//     }else{
+//         printf("regist failed");
+//     }
+//     fclose(fp);
+// }
+// void search_by_cat(struct ProductSales *ps){
+    
+//     printf("choose category\n");
+//     FILE *fp = fopen("csv/allCategory.csv","r");
+//     int id;
+//     char cat[20];
+//     while (fscanf(fp,"%d,%s",&id,cat)!=EOF)
+//     {
+//         printf("-------%s-------\n",cat);
+//     }
+//     fclose(fp);
+//     printf("enter category: ");
+//     scanf("%s",cat);
+
+//     struct Product *tmp = ps->products;
+//     while (tmp->next != NULL)
+//     {
+//         if(strcmp(tmp->category,cat) == 0){
+//         printf("ID: %s | ", tmp->ID);
+//         printf("Stock ID: %s | ", tmp->stockID);
+//         printf("Product Name: %s | ", tmp->productName);
+//         printf("Price: %d\n", tmp->price);
+//         }
+//         tmp = tmp->next;
+//     }
+    
+// }
+
+void view_cart(struct ProductSales *ps)
+{
+    int user_id = ps->current_user->UserID;
+    struct Product *head = ps->products;
+    struct PurchaseHistory *node = (struct PurchaseHistory *)malloc(sizeof(struct PurchaseHistory));
+    FILE *file = fopen("csv/addToCart.csv", "r");
+    char buff[255];
+    while (fgets(buff,255,file))
     {
-        head = head->next;
-        
+        sscanf(buff, "%d,%20[^,],%d\n", &node->UserID, node->StockID, &node->Quantity);
+        if (node->UserID == user_id)
+        {
+            printf("user Id : %d \n", user_id);
+            struct Product *pdd = ps->products;
+            while (pdd->next != NULL)
+            {
+                if (atoi(pdd->ID) + atoi(pdd->stockID) == atoi(node->StockID))
+                {
+                    printf("Product name : %s \n", pdd->productName);
+                    break;
+                }
+                pdd = pdd->next;
+            }
+            printf("Quantity : %d \n", node->Quantity);
+            printf("---------------------------------------------\n");
+        }
     }
-    FILE *fp = fopen("csv/login.csv", "a");
-    if(fp!=NULL){
-        printf("%d",head->UserID);
-        fprintf(fp, "%d,%s,%s,%s\n", head->UserID+1, username, password,"user");
-    }else{
-        printf("regist failed");
-    }
-    fclose(fp);
+    fclose(file);
 }
 int main()
 {
     struct ProductSales app;
-    app.current_user->UserID = 2;
+    app.current_user->UserID = 14;
      load_data(&app);
-    //view_cart(&app);
-    register_user(&app);
+     //search_by_cat(&app);
+    view_cart(&app);
+    //register_user(&app);
     //log_activity(&app,"hello","555");
     //add_to_cart(&app);
     // struct Product *head = app.products;
