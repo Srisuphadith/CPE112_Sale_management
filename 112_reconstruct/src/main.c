@@ -656,6 +656,8 @@ void main_menu(struct ProductSales *ps)
             register_user_NEW(ps);
             break;
         case 3:
+        printf("Thank you for your attention.");
+            exit(0);
             break;
         default:
             printf("Invalid choice. Please try again.\n");
@@ -1047,7 +1049,9 @@ void customer_menu(struct ProductSales *ps)
         //     checkout(ps);
         //     break;
         case 5:
-            return;//รอเเก้
+            clear_terminal();
+            main_menu(ps);//รอเเก้
+
         default:
             printf("Invalid choice. Please try again.\n");
         }
