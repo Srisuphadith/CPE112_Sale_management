@@ -448,6 +448,7 @@ void login(struct ProductSales *ps) {
             struct User *UserD = searchUserByUsernameAndPassword(ps->users, username, password);
             if (UserD != NULL) {
                 ps->current_user = UserD;
+                // printf("%p" , ps->current_user);
                 return;
             } else {
                 attempts++;
@@ -466,12 +467,10 @@ void register_user(struct ProductSales *ps , char *userLoginFile) {
     char username[100], password[100];
     while (1) {
         printf("Enter new username: ");
-        if (fgets(username, sizeof(username), stdin) == NULL)
-        {
-            fprintf(stderr, "Error reading input. Please try again.\n");
-            continue;
-        }
-        // remove_newline(username);
+        printf("Username: ");
+        scanf("%s", username);
+        remove_newline(username);
+
         if (searchUserByUsername(ps->users, username) == NULL) {
 
             break;
@@ -484,11 +483,8 @@ void register_user(struct ProductSales *ps , char *userLoginFile) {
     // printf("\n");
 
     printf("Enter password: ");
-    if (fgets(password, sizeof(password), stdin) == NULL)
-    {
-        fprintf(stderr, "Error reading input. Please try again.\n");
-        return; // หยุดการทำงานหากเกิดข้อผิดพลาดในการอ่านข้อมูล
-    }
+    printf("Password: ");
+    scanf("%s", password);
     remove_newline(password);
 
     struct User *user = createNode_User(username, password, "user", ps->users->UserID);
@@ -840,8 +836,18 @@ void view_orders(struct ProductSales *ps)
 {
     // View orders logic here
     struct History *user_his = ps->user_history;
-    int user[100];
-    char stock[50];
+    struct History *tmp = user_his;
+    int user[50];
+    char id[50][6];
+    int i =0;
+    do{
+        if(i == 0){
+            user[i] = tmp->user_id;
+        }
+        else if(user[i] == user_his->user_id){
+
+        }
+    }
 }
 
 // void generate_report(struct ProductSales *ps)
@@ -1213,11 +1219,14 @@ void run(struct ProductSales *ps)
     load_data(ps);
     while (1){
         login(ps);
+        //printf("%p" , ps->current_user);
+        remove_newline(ps->current_user->Role);
         if (ps->current_user != NULL){
-            if (strcmp(ps->current_user->Role, "Admin") == 0){
+            // printf("|%s|" , ps->current_user->Role);
+            if (strcmp(ps->current_user->Role, "admin") == 0){
                 admin_menu(ps);
             }
-            else if (strcmp(ps->current_user->Role, "Customer") == 0){
+            else if (strcmp(ps->current_user->Role, "user") == 0){
                 customer_menu(ps);
             }
         }
