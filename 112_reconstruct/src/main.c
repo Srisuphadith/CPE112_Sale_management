@@ -465,21 +465,29 @@ void login(struct ProductSales *ps) {
 
 void register_user(struct ProductSales *ps , char *userLoginFile) {
     char username[100], password[100];
-    while (1) {
+    // while (1) {
         printf("Enter new username: ");
         printf("Username: ");
         scanf("%s", username);
         remove_newline(username);
 
-        if (searchUserByUsername(ps->users, username) == NULL) {
+        while (1)
+        {
+            if (searchUserByUsername(ps->users, username) == NULL)
+            {
 
-            break;
-        } else {
-            printf("Username already exists. Please choose another username.\n");
-            // continue;
+                break;
+            }
+            else
+            {
+                printf("Username already exists. Please choose another username.\n");
+                // continue;
+            }
         }
         
-    }
+        
+        
+    // }
     // printf("\n");
 
     printf("Enter password: ");
@@ -832,6 +840,20 @@ void delete_product(struct ProductSales *ps)
     }
 }
 
+int findAllStoreuserID(struct History *hs,int *arr){
+    int index = 0;
+    int isSet = 0;
+    while(hs != NULL){
+        if(arr[index] == hs->user_id){
+            isSet = 1;
+            break;
+        }
+        index++;
+        hs->next;
+    }
+    return (isSet == 0)? isSet : index;
+}
+
 void view_orders(struct ProductSales *ps)
 {
     // View orders logic here
@@ -841,13 +863,9 @@ void view_orders(struct ProductSales *ps)
     char id[50][6];
     int i =0;
     do{
-        if(i == 0){
-            user[i] = tmp->user_id;
-        }
-        else if(user[i] == user_his->user_id){
-
-        }
-    }while(1);
+        findAllStoreuserID(tmp , user);
+        tmp->next;
+    }while(tmp != NULL);
 }
 
 // void generate_report(struct ProductSales *ps)
