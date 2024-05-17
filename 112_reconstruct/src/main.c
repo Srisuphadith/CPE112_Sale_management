@@ -484,6 +484,7 @@ struct Product *searchProductByIDamdStockID(struct Product *head, char *ID, char
 {
     while (head != NULL)
     {
+        // printf("| %s-%s   %s-%s |" , head->ID , ID , head->stockID , StockID);
         if (strcmp(head->ID, ID) == 0 && strcmp(head->stockID, StockID) == 0)
         {
             return head; // Found the product
@@ -1217,6 +1218,7 @@ void product_detail(struct ProductSales *ps)
     printf("Enter ProductID\n");
     printf("ProductID : ");
     scanf("%s", productId);
+    // printf("|%s|" , productId);
     remove_newline(productId);
     if (strcmp(productId, "-1") == 0)
     {
@@ -1231,6 +1233,7 @@ void product_detail(struct ProductSales *ps)
     printf("Enter StockID\n");
     printf("StockID : ");
     scanf("%s", stockId);
+    // printf("|%s|" , stockId);    
     remove_newline(stockId);
     if (strcmp(stockId, "-1") == 0)
     {
@@ -1242,6 +1245,8 @@ void product_detail(struct ProductSales *ps)
         printf("StockID not found.\n");
         return;
     }
+        clear_terminal();
+
     struct Product *tmp = product;
     int isRemain = 0;
     int option;
@@ -1264,7 +1269,7 @@ void product_detail(struct ProductSales *ps)
     {
         if ((key1 == key) && tmp->stock > 0)
         {
-            printf("%d\n", tmp->stock);
+            // printf("%d\n", tmp->stock);
             isRemain = 1;
             break;
         }
