@@ -1005,7 +1005,7 @@ void delete_product(struct ProductSales *ps)
 
 void view_orders(struct ProductSales *ps)
 {
-    int i = 0;
+    int i = 1;
     struct History *node = ps->user_history;
 
     // Print table header
@@ -1250,7 +1250,7 @@ void product_detail(struct ProductSales *ps)
     struct Product *tmp = product;
     int isRemain = 0;
     int option;
-    int amount;
+    int amount = 0;
     
     tmp->access = tmp->access + 1;
     FILE *fp = fopen("csv/product.csv", "w");
@@ -1300,7 +1300,19 @@ void product_detail(struct ProductSales *ps)
     {
     case 1:
         printf("Required quantity : ");
-        scanf("%d", &amount);
+        do
+        {
+            if (amount < 0)
+            {
+                printf("Please enter positive amount number.\n");
+                printf("Required quantity : ");
+            }
+            
+            scanf("%d", &amount);
+        } while (amount < 0);
+        
+            
+        
         add_to_cart(ps, productId, stockId, amount);
         break;
     case 2:
@@ -1329,12 +1341,12 @@ void add_to_cart(struct ProductSales *ps, char ID[6], char StockID[6], int amoun
     }
     else
     {
-        printf("%s is added\n", p->productName);
+        printf("\033[0;32m\n%s is added\n\033[0m", p->productName);
         FILE *file = fopen("csv/addToCart.csv", "a");
         fprintf(file, "%d,%d,%d\n", ps->current_user->UserID, atoi(p->ID) + atoi(p->stockID), amount);
         fclose(file);
         p->addToCart = p->addToCart + amount;
-        printf("--%d--", p->stock);
+        // printf("--%d--", p->stock);
         FILE *fp = fopen("csv/product.csv", "w");
         while (head != NULL)
         {
@@ -1759,6 +1771,23 @@ int *dealWithFloyd(int productChose)
 
 void buy(struct ProductSales *ps, char ID[6], char StockID[6], int amount)
 {
+    int isRemain = 0;
+    struct Product *product = searchProductByIDamdStockID(ps->products, ID, StockID);
+    struct Product *tmp = product;
+    int key1 = atoi(tmp->ID) + atoi(tmp->stockID);
+    int key = atoi(ID) + atoi(StockID);
+    while (tmp != NULL)
+    {
+        if ((key1 == key) && tmp->stock > 0)
+        {
+            // printf("%d\n", tmp->stock);
+            isRemain = 1;
+            break;
+        }
+        tmp = tmp->next;
+    }
+    
+
     struct Product *head = ps->products;
     struct Product *p;
     p = searchProductByIDamdStockID(head, ID, StockID);
@@ -1768,13 +1797,20 @@ void buy(struct ProductSales *ps, char ID[6], char StockID[6], int amount)
     }
     else
     {
-        printf("%s was/were bought.\n", p->productName);
+        printf("\n\033[0;32m%s was/were bought.\n\033[0m", p->productName);
         /*FILE *file = fopen("csv/addToCart.csv", "a");
         fprintf(file, "%d,%d,%d\n", ps->current_user->UserID, atoi(p->ID) + atoi(p->stockID), amount);
         fclose(file);*/
         p->stock = p->stock - amount;
         p->buy = p->buy + amount;
-        printf("--%d--", p->stock);
+        if (isRemain == 1)
+        {
+            printf("\'Product Remaining --%d--\'\n", p->stock);
+        }
+        else if (isRemain == 0)
+        {
+            printf("\'Out Of Stock\'\n");
+        }
         FILE *fp = fopen("csv/product.csv", "w");
         while (head != NULL)
         {
