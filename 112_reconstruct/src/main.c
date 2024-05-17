@@ -1276,7 +1276,7 @@ void product_detail(struct ProductSales *ps)
         tmp = tmp->next;
     }
 
-    printf("Product ID : %s\n", product->stockID);
+    printf("Product ID : %s\n", product->ID);
     printf("Product Name : %s | Category : %s\n", product->productName, product->category);
     printf("Status : ");
 
