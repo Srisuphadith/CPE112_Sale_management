@@ -687,7 +687,7 @@ void main_menu(struct ProductSales *ps)
             exit(0);
             break;
         default:
-            printf("Invalid choice. Please try again.\n");
+            printf("\033[1;31m\nInvalid choice. Please try again.\033[0m");
         }
     } while (option != 3);
 }
@@ -696,13 +696,12 @@ void admin_menu(struct ProductSales *ps)
 {
     int option;
     char outputFileName[100];
-    do
+    while (1)
     {
-        printf("\n");
-        printf("Admin Menu\n");
+        printf("\nAdmin Menu\n");
         printf(" 1. Manage Product\n");
         printf(" 2. View User Order\n");
-        printf("-1. Exit\n");
+        printf("-1. Back to login\n");
         printf("-----------------\n");
         printf("Enter your choice : ");
         scanf("%d", &option);
@@ -715,10 +714,35 @@ void admin_menu(struct ProductSales *ps)
         case 2:
             view_orders(ps);
             break;
+        case -1:
+            return;
         default:
-            printf("Invalid choice. Please try again.\n");
+            printf("\033[1;31m\nInvalid choice. Please try again.\033[0m");
         }
-    } while (option != -1);
+    }
+    
+    // do
+    // {
+    //     printf("\nAdmin Menu\n");
+    //     printf(" 1. Manage Product\n");
+    //     printf(" 2. View User Order\n");
+    //     printf("-1. Exit\n");
+    //     printf("-----------------\n");
+    //     printf("Enter your choice : ");
+    //     scanf("%d", &option);
+    //     clear_terminal();
+    //     switch (option)
+    //     {
+    //     case 1:
+    //         manage_products(ps);
+    //         break;
+    //     case 2:
+    //         view_orders(ps);
+    //         break;
+    //     default:
+    //         printf("Invalid choice. Please try again.\n");
+    //     }
+    // } while (option != -1);
 
     // view_products(&ps, &outputFileName);
 }
@@ -729,7 +753,7 @@ void manage_products(struct ProductSales *ps)
 
     while (1)
     {
-        printf("\nManage Products\n");
+        printf("\n\033[0;34mManage Products\033[0m\n");
         printf("1. View Products\n");
         printf("2. Add Product\n");
         printf("3. Update Product\n");
@@ -761,7 +785,8 @@ void manage_products(struct ProductSales *ps)
             clear_terminal();
             return;
         default:
-            printf("Invalid choice. Please try again.\n");
+            clear_terminal();
+            printf("\033[1;31m\nInvalid choice. Please try again.\033[0m");
         }
     }
 }
@@ -811,7 +836,7 @@ void add_product(struct ProductSales *ps)
     struct Product *newNode = (struct Product *)malloc(sizeof(struct Product));
     char filename[] = "csv/product.csv";
     char idToEdit[6];
-    printf("Add Product");
+    printf("\033[0;34mAdd Product\033[0m\n");
     printf("Enter new ID : ");
     scanf("%5s", newNode->ID);
     getchar();
@@ -870,7 +895,7 @@ void update_product(struct ProductSales *ps)
     struct Product *newNode = (struct Product *)malloc(sizeof(struct Product));
     char filename[] = "csv/product.csv";
     char idToEdit[7]; // เพิ่มขนาดเป็น 7 เพื่อให้สามารถเก็บ 6 อักขระ + null terminator
-    printf("Edit Product");
+    printf("\033[0;34mEdit Product\033[0m\n");
     printf("Enter ID to edit : ");
     scanf("%5s", idToEdit);
     getchar(); // Clear the newline character left by scanf
@@ -968,7 +993,7 @@ void delete_product(struct ProductSales *ps)
 {
     char IDdelete[6];
     char stockToDelete[6];
-    printf("Delete Product\n");
+    printf("\033[0;34mDelete Product\033[0m\n");
     printf("Enter ID to delete: ");
     if (scanf("%5s", IDdelete) != 1)
     {
@@ -1054,19 +1079,9 @@ void view_orders(struct ProductSales *ps)
 
     while (node != NULL)
     {
+        //want to add product name 
         printf("%4d | %7d | %11s |       %s", i++, node->user_id, node->date, node->pro_id);
         printf("\n");
-        // struct Product *find = searchProductByID(ps->products, node->pro_id);
-
-        // if (find != NULL)
-        // {
-        //     printf("%4d | %7d | %10s | %s\n", i++, node->user_id, node->date, find->productName);
-        // }
-        // else
-        // {
-        //     printf("%4d | %7d | %10s | Product not found\n", i++, node->user_id, node->date);
-        // }
-
         node = node->next;
     }
     printf("--------------------------------------------\n");
@@ -1079,27 +1094,32 @@ void customer_menu(struct ProductSales *ps)
 
     while (1)
     {
-        printf("\nCustomer Menu:\n");
+        printf("\033[0;34m\nCustomer Menu\033[0m\n");
         printf("1. View Recommended Products\n");
         printf("2. View All Products\n");
         printf("3. View Cart\n");
         printf("4. Search by Category\n");
         printf("5. Logout\n");
+        printf("-----------------------------\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
         switch (choice)
         {
         case 1:
+            clear_terminal();
             view_recommended_products(ps);
             break;
         case 2:
+            clear_terminal();
             view_all_products(ps);
             break;
         case 3:
+            clear_terminal();
             view_cart(ps);
             break;
         case 4:
+            clear_terminal();
             search_by_cat(ps);
         // case 5:
         //     checkout(ps);
@@ -1109,7 +1129,8 @@ void customer_menu(struct ProductSales *ps)
             main_menu(ps); // รอเเก้
 
         default:
-            printf("Invalid choice. Please try again.\n");
+            clear_terminal();
+            printf("\033[1;31m\nInvalid choice. Please try again.\033[0m");
         }
     }
 }
@@ -1239,7 +1260,7 @@ void view_recommended_products(struct ProductSales *ps)
     // Assuming we want to recommend the first 5 products after sorting
     int recommendation_count = 5;
     struct Product *tmp = product;
-
+    clear_terminal();
     for (int i = 0; i < recommendation_count && tmp != NULL; i++)
     {
         printf("Product ID: %s | ", tmp->ID);
@@ -1256,9 +1277,8 @@ void product_detail(struct ProductSales *ps)
     struct Product *head = ps->products;
 
     char productId[6], stockId[6];
-    printf("\n\nEnter ProductID and StockID of product you want to view detail (if exit -1)\n");
-    printf("Enter ProductID\n");
-    printf("ProductID : ");
+    printf("\n\nView detail \033[0;33m(if exit -1)\033[0m\n");
+    printf("Product ID : ");
     scanf("%s", productId);
     // printf("|%s|" , productId);
     remove_newline(productId);
@@ -1272,7 +1292,6 @@ void product_detail(struct ProductSales *ps)
     //     printf("ProductID not found.\n");
     //     return;
     // }
-    printf("Enter StockID\n");
     printf("StockID : ");
     scanf("%s", stockId);
     // printf("|%s|" , stockId);
@@ -1284,7 +1303,7 @@ void product_detail(struct ProductSales *ps)
     struct Product *product = searchProductByIDamdStockID(ps->products, productId, stockId);
     if (product == NULL)
     {
-        printf("StockID not found.\n");
+        printf("\n\033[0;31mStockID not found.\033[0m");
         return;
     }
     clear_terminal();
@@ -1364,7 +1383,7 @@ void product_detail(struct ProductSales *ps)
         return;
         break;
     default:
-        printf("Invalid choice.\n");
+        printf("\033[1;31m\nInvalid choice. Please try again.\033[0m");
         break;
     }
 }
@@ -1569,6 +1588,7 @@ void checkout(struct ProductSales *ps)
 // view_all_products ดีเเล้ว------------------------------------------------------------------------------------------------------------------------------------------------
 void view_all_products(struct ProductSales *ps)
 {
+
     char ID[6];
     char StockID[6];
     struct Product *head = ps->products;
@@ -1585,7 +1605,6 @@ void view_all_products(struct ProductSales *ps)
         printf("Price: %d\n", head->price);
         head = head->next;
     }
-    printf("\n");
     product_detail(ps);
 }
 
@@ -1610,6 +1629,7 @@ void run(struct ProductSales *ps)
             }
             else if (strcmp(ps->current_user->Role, "user") == 0)
             {
+                clear_terminal();
                 customer_menu(ps);
             }
         }
